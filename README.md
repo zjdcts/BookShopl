@@ -1,4 +1,4 @@
-# dindonfrontend
+# 叮咚叮咚点餐系统的前端 DindonFrontend
 
 ## Project setup
 ```
@@ -27,3 +27,4 @@ yarn run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
