@@ -1,12 +1,21 @@
 <template>
-    <div>dish</div>
+  <div class="xx">
+    <DishSwipe></DishSwipe>
+    <DishNavBar></DishNavBar>
+  </div>
 </template>
+
 <script>
-    export default {
-        name: "dish"
-    }
+import DishSwipe from "./DishSwipe.vue";
+import DishNavBar from "./DishNavBar";
+export default {
+  name: "Dish",
+  components: {
+    DishNavBar,
+    DishSwipe
+  }
+};
 </script>
 
-<style scoped>
-
+<style>
 </style>
