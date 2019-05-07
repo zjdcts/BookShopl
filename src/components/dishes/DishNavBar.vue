@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div>
+            {{log}}
+        </div>
         <van-tabs v-model="active" sticky swipeable>
             <van-tab v-for="item in dishType" :title="item" :key="item">
                 <div v-for="(value, name) in dishList" :key="name">
@@ -16,7 +19,7 @@
                                     {{dishItem.dishName}}
                                 </div>
                                 <div class="dishButton" slot="footer">
-                                    <van-button @onClick="addNum(dishItem.dishId)" round size="mini" type="info">添加</van-button>
+                                    <van-button @click="addNum(dishItem.dishId)" round size="mini" type="info">添加</van-button>
                                     <span>{{orders[dishItem.dishId]}}</span>
                                     <van-button round size="mini" type="warning">删除</van-button>
                                 </div>
@@ -39,21 +42,25 @@
                 active: 2,
                 dishType: null,
                 dishList: null,
-                sns: null,
-                orders:{
-
-                }
+                orders:{},
+                log:''
             }
         },
         created() {
             this.$axios.get("http://localhost:3000/dishlist")
-                .then(response => (this.dishList = response.data))
+                .then(response => {
+                    this.dishList = response.data;
+                    for(var i=1;i<100;i++){
+                        this.orders[i]=0
+                    }
+                })
             this.$axios.get("http://localhost:3000/dishType")
                 .then(response => (this.dishType = response.data))
         },
         methods: {
             addNum: function(index) {
-                this.orders[index]++;
+                this.log+=index
+                this.orders[index]+=1;
             }
         }
     }
