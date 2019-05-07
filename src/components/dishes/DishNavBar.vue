@@ -1,83 +1,71 @@
 <template>
     <div>
-        <van-tree-select
-                :items="items"
-                :main-active-index="mainActiveIndex"
-                :active-id="activeId"
-                @navclick="onNavClick"
-                @itemclick="onItemClick"
-        />
+        <van-tabs v-model="active" sticky swipeable>
+            <van-tab v-for="item in dishType" :title="item" :key="item">
+                <div v-for="(value, name) in dishList" :key="name">
+                    <div v-if="item==name">
+                        <div v-for="dishItem in value" :key="dishItem.dishName">
+                            <van-card
+                                    :num="dishItem.dishStock"
+                                    :price="dishItem.dishPrice"
+                                    :desc="dishItem.dishDescription"
+                                    :title="dishItem.dishName"
+                                    :thumb="dishItem.dishPicture"
+                            >
+                                <div slot = "title" class="dishTitle">
+                                    {{dishItem.dishName}}
+                                </div>
+                                <div class="dishButton" slot="footer">
+                                    <van-button @onClick="addNum(dishItem.dishId)" round size="mini" type="info">添加</van-button>
+                                    <span>{{orders[dishItem.dishId]}}</span>
+                                    <van-button round size="mini" type="warning">删除</van-button>
+                                </div>
+                            </van-card>
+                        </div>
+                    </div>
+                </div>
+            </van-tab>
+        </van-tabs>
     </div>
 </template>
 <script>
+    //import DishCard from "./DishCard";
+
     export default {
+        name: "dishNavBar",
+        //components: {DishCard},
         data() {
             return {
-                // 左侧高亮元素的index
-                mainActiveIndex: 0,
-                // 被选中元素的id
-                activeId: 1,
-                dishList: [{
-                    // 导航名称
-                    text: 'hotdish',
-                    // 该导航下所有的可选项
-                    children: [
-                        {
-                            // 名称
-                            text: './picture/1.jpg',
-                            // id，作为匹配选中状态的标识
-                            id: 1,
-                            image: '/home/cosmos/Projects/DindonFrontend/src/components/dishes/picture/1.jpg'
-                            // 禁用选项
-                        },
-                        {
-                            text: 'hongshaopaigu',
-                            id: 2
-                        }
-                    ]
-                },
-                    {
-                        // 导航名称
-                        text: 'liangcai',
-                        // 该导航下所有的可选项
-                        children: [
-                            {
-                                // 名称
-                                text: 'liangbanzhuerduo',
-                                // id，作为匹配选中状态的标识
-                                id: 1,
-                                // 禁用选项
-                            },
-                            {
-                                text: '杭州',
-                                id: 2
-                            }
-                        ]
-                    }]
-            };
-        },
-        computed: {
-            items() {
-                return [{
-                    text: this.dishList[0].text,
-                    children: this.dishList[0].children
-                },
-                    {
-                        text: this.dishList[1].text,
-                        children: this.dishList[1].children
-                    }]
+                active: 2,
+                dishType: null,
+                dishList: null,
+                sns: null,
+                orders:{
+
+                }
             }
         },
+        created() {
+            this.$axios.get("http://localhost:3000/dishlist")
+                .then(response => (this.dishList = response.data))
+            this.$axios.get("http://localhost:3000/dishType")
+                .then(response => (this.dishType = response.data))
+        },
         methods: {
-            onNavClick(index) {
-                this.mainActiveIndex = index;
-            },
-            onItemClick(data) {
-                this.activeId = data.id;
+            addNum: function(index) {
+                this.orders[index]++;
             }
         }
     }
 </script>
 
 <style scoped>
+    .dishCard {
+        padding: 5px;
+        font-style: italic;
+    }
+    .dishTitle{
+        font-size: large;
+        font-style: oblique;
+    }
 </style>

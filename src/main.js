@@ -8,11 +8,14 @@ import Order from "./components/orders/Order";
 import User from "./components/users/User";
 import Vant from 'vant'
 import 'vant/lib/index.css';
+import axios from 'axios';
+
 Vue.config.productionTip = false
 
 
 Vue.use(Vant)
 Vue.use(VueRouter)
+Vue.prototype.$axios=axios
 
 const routes = [
     {path: '/', component: Announcement},
