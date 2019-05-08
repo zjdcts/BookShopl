@@ -1,7 +1,7 @@
 <template>
   <div>
     <van-row class="swipeSection">
-      <van-swipe :autoplay="3000" indicator-color="yellow">
+      <van-swipe :autoplay="6000" indicator-color="yellow">
         <van-swipe-item v-for="(image, index) in imges" :key="index">
           <img class="swipeImg" :src="image.img">
         </van-swipe-item>
@@ -28,6 +28,7 @@ export default {
 <style scoped>
 .swipeSection {
   height: 40%;
+  padding-top: 10px;
 }
 .swipeImg {
   width: 100%;

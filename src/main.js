@@ -22,6 +22,7 @@ const routes = [
     {path: '/dishes', component: Dish},
     {path: '/orders', component: Order},
     {path: '/profile', component: User},
+    {path: '*', redirect:'/'}
 ]
 
 const router = new VueRouter({
