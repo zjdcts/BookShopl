@@ -9,6 +9,7 @@ import User from "./components/users/User";
 import Vant from 'vant'
 import 'vant/lib/index.css';
 import axios from 'axios';
+import OrderInfo from "./components/orders/OrderInfo";
 
 Vue.config.productionTip = false
 
@@ -21,6 +22,7 @@ const routes = [
     {path: '/', component: Announcement},
     {path: '/dishes', component: Dish},
     {path: '/orders', component: Order},
+    {path: '/orderinfo', name:'orderinfo',component: OrderInfo},
     {path: '/profile', component: User},
     {path: '*', redirect:'/'}
 ]

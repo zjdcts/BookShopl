@@ -8,39 +8,38 @@
                 </van-badge-group>
             </van-col>
             <van-col span="20">
-                <div v-for="(value, name) in dishList" :key="name">
-                    <div v-if="nowDishType==name">
-                        <div v-for="dishItem in value" :key="dishItem.dishName">
-                            <van-card
-                                    :num="orders[dishItem.dishId]"
-                                    :price="dishItem.dishPrice"
-                                    :desc="dishItem.dishDescription"
-                                    :title="dishItem.dishName"
-                                    :thumb="dishItem.dishPicture"
-                            >
-                                <div slot="title" class="dishTitle">
-                                    {{dishItem.dishName}}
-                                </div>
-                                <div class="dishButton" slot="footer">
-                                    <van-stepper disable-input
-                                                 min="0"
-                                                 :value="orders[dishItem.dishId]"
-                                                 @plus="addNum(dishItem.dishId, dishItem.dishPrice)"
-                                                 @minus="subNum(dishItem.dishId, dishItem.dishPrice)"
-                                    >
-                                    </van-stepper>
-                                </div>
-                            </van-card>
-                        </div>
+                <div v-for="dishItem in dishList" :key="dishItem.dishId">
+                    <div v-if="nowDishType==dishItem.dishType">
+                        <van-card
+                                :num="orders[dishItem.dishId]"
+                                :price="dishItem.dishPrice"
+                                :desc="dishItem.dishDescription"
+                                :title="dishItem.dishName"
+                                :thumb="dishItem.dishPicture"
+                        >
+                            <div slot="title" class="dishTitle">
+                                {{dishItem.dishName}}
+                            </div>
+                            <div class="dishButton" slot="footer">
+                                <van-stepper disable-input
+                                             min="0"
+                                             :value="orders[dishItem.dishId]"
+                                             @plus="addNum(dishItem.dishId, dishItem.dishPrice)"
+                                             @minus="subNum(dishItem.dishId, dishItem.dishPrice)"
+                                >
+                                </van-stepper>
+                            </div>
+                        </van-card>
                     </div>
                 </div>
+
             </van-col>
         </van-row>
 
         <van-submit-bar
                 :price="commdityPrice"
                 button-text="提交订单"
-
+                @submit="goToOrderInfo"
         >
             <span class="dishNum">共选{{commdityNum}}件菜品</span>
         </van-submit-bar>
@@ -102,6 +101,9 @@
                 this.nowDishType = this.dishType[key];
                 // eslint-disable-next-line no-console
                 //console.log(this.activeKey)
+            },
+            goToOrderInfo(){
+                this.$router.push({name:'orderinfo'})
             }
         }
     }
