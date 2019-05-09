@@ -1,7 +1,18 @@
 <template>
   <div class="xx">
-    <DishSwipe></DishSwipe>
-    <DishNavBar></DishNavBar>
+    <van-row span="24">
+      <van-nav-bar
+              title="菜品列表"
+              left-text="返回"
+              right-text="回首页"
+              fixed
+              left-arrow
+              @click-left="onClickLeft"
+              @click-right="onClickRight"
+      />
+      <DishSwipe></DishSwipe>
+      <DishNavBar></DishNavBar>
+    </van-row>
   </div>
 </template>
 
@@ -13,9 +24,23 @@ export default {
   components: {
     DishNavBar,
     DishSwipe
+  },
+  methods: {
+    onClickLeft: function () {
+      this.$router.go(-1);
+      // eslint-disable-next-line no-console
+      //console.log(1);
+    },
+    onClickRight: function () {
+      this.$router.push('/');
+      this.$emit("titleChanged","1");
+      // eslint-disable-next-line no-console
+      //console.log(1);
+    },
   }
 };
 </script>
 
-<style>
+<style scoped>
+
 </style>

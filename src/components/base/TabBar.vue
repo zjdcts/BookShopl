@@ -1,5 +1,5 @@
 <template>
-    <van-tabbar v-model="active" active-color="#01A82D">
+    <van-tabbar v-model="newTitle" active-color="#01A82D">
         <van-tabbar-item icon="home-o" to="/">首页</van-tabbar-item>
         <van-tabbar-item icon="shopping-cart-o" to="/dishes">点餐</van-tabbar-item>
         <van-tabbar-item icon="orders-o" to="/orders">订单</van-tabbar-item>
@@ -12,9 +12,12 @@
 
     export default {
         name: "TabBar",
+        props: {
+            newTitle: Number
+        },
         data() {
             return {
-                active: 0
+
             }
         }
     }

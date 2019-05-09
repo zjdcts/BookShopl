@@ -28,7 +28,6 @@ export default {
 <style scoped>
 .swipeSection {
   height: 40%;
-  padding-top: 10px;
 }
 .swipeImg {
   width: 100%;

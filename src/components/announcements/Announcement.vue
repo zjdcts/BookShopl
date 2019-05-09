@@ -1,12 +1,16 @@
 <template>
     <div>
-        公告
+        <DishSwipe></DishSwipe>
     </div>
 </template>
 
 <script>
+    import DishSwipe from "../dishes/DishSwipe.vue";
     export default {
-        name: "Announcement"
+        name: "Announcement",
+        components: {
+            DishSwipe
+        }
     }
 </script>
 

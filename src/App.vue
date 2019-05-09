@@ -1,7 +1,7 @@
 <template>
     <div>
         <router-view></router-view>
-        <TabBar></TabBar>
+        <TabBar @titleChanged="updateTitle($event)" :newTitle="nowTitle"></TabBar>
     </div>
 </template>
 
@@ -9,8 +9,18 @@
     import TabBar from "./components/base/TabBar";
     export default {
         name: 'app',
+        data(){
+            return {
+                nowTitle:null
+            }
+        },
         components: {
             TabBar
+        },
+        methods: {
+            updateTitle(title){
+                this.nowTitle = title
+            }
         }
     }
 </script>

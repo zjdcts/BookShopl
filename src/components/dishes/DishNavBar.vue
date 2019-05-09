@@ -1,16 +1,15 @@
 <template>
     <div>
-        <van-nav-bar
-                title="标题"
-                left-text="返回"
-                fixed
-                left-arrow
-                @click-left="onClickLeft"
-        />
-        <van-tabs v-model="active" sticky swipeable>
-            <van-tab v-for="item in dishType" :title="item" :key="item">
+        <van-row>
+            <van-col span="4">
+                <van-badge-group :active-key="activeKey" @change="onChange">
+                    <van-badge v-for="item in dishType" :title="item" :key="item">
+                    </van-badge>
+                </van-badge-group>
+            </van-col>
+            <van-col span="20">
                 <div v-for="(value, name) in dishList" :key="name">
-                    <div v-if="item==name">
+                    <div v-if="nowDishType==name">
                         <div v-for="dishItem in value" :key="dishItem.dishName">
                             <van-card
                                     :num="orders[dishItem.dishId]"
@@ -23,19 +22,21 @@
                                     {{dishItem.dishName}}
                                 </div>
                                 <div class="dishButton" slot="footer">
-                                    <van-button @click="addNum(dishItem.dishId, dishItem.dishPrice)" round size="mini"
-                                                type="info">添加
-                                    </van-button>
-                                    <van-button @click="subNum(dishItem.dishId, dishItem.dishPrice)" round size="mini"
-                                                type="warning">删除
-                                    </van-button>
+                                    <van-stepper disable-input
+                                                 min="0"
+                                                 :value="orders[dishItem.dishId]"
+                                                 @plus="addNum(dishItem.dishId, dishItem.dishPrice)"
+                                                 @minus="subNum(dishItem.dishId, dishItem.dishPrice)"
+                                    >
+                                    </van-stepper>
                                 </div>
                             </van-card>
                         </div>
                     </div>
                 </div>
-            </van-tab>
-        </van-tabs>
+            </van-col>
+        </van-row>
+
         <van-submit-bar
                 :price="commdityPrice"
                 button-text="提交订单"
@@ -60,7 +61,9 @@
                 xx: 0,
                 commdityNum: 0,
                 commdityPrice: 0,
-                scrollTop: 0
+                scrollTop: 0,
+                activeKey: 0,
+                nowDishType: null
             }
         },
         created() {
@@ -72,7 +75,10 @@
                     }
                 })
             this.$axios.get("http://localhost:3000/dishType")
-                .then(response => (this.dishType = response.data))
+                .then(response => {
+                    this.dishType = response.data
+                    this.nowDishType = this.dishType[0];
+                })
         },
         methods: {
             addNum: function (index, price) {
@@ -80,7 +86,7 @@
                 this.commdityNum += 1;
                 this.commdityPrice += price * 100;
                 // eslint-disable-next-line no-console
-                console.log(this.orders[index]);
+                //console.log(this.orders[index]);
             },
             subNum: function (index, price) {
                 if (this.orders[index] > 0) {
@@ -89,12 +95,13 @@
                     this.commdityNum -= 1;
                 }
                 // eslint-disable-next-line no-console
-                console.log(this.orders[index]);
+                //console.log(this.orders[index]);
             },
-            onClickLeft: function () {
-                this.$router.go(-1);
+            onChange(key) {
+                this.activeKey = key;
+                this.nowDishType = this.dishType[key];
                 // eslint-disable-next-line no-console
-                console.log(1);
+                //console.log(this.activeKey)
             }
         }
     }
