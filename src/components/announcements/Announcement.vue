@@ -1,19 +1,100 @@
 <template>
-    <div>
+    <div style="background-color: #f7f7f9">
         <DishSwipe></DishSwipe>
+        <van-row type="flex" justify="center" style="padding-top: 2px; height: 9rem;">
+            <van-col span="24" style="background-color: #fec427">
+                <van-row type="flex" justify="center">
+                    <span class="iconfont" style="padding-top: 2rem" @click="goToDish">&#xe63c;</span>
+                </van-row>
+                <van-row type="flex" justify="center">
+                    <span>点餐</span>
+                </van-row>
+            </van-col>
+        </van-row>
+        <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
+            <van-col span="10" style="background-color: #fed76f">
+                <van-row type="flex" justify="center">
+                    <span class="iconfont" style="padding-top: 2rem">&#xe615;</span>
+                </van-row>
+                <van-row type="flex" justify="center">
+                    <span>预定</span>
+                </van-row>
+            </van-col>
+            <van-col span="14" style="background-color: #fec427;">
+                <van-row type="flex" justify="center" style="padding-top: 2rem">
+                    <span class="iconfont" @click="goToOrder">&#xe67c;</span>
+                </van-row>
+                <van-row type="flex" justify="center">
+                    <span>订单详情</span>
+                </van-row>
+            </van-col>
+        </van-row>
+        <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
+            <van-col span="14" style="background-color: #feebb3">
+                <van-row type="flex" justify="center" style="padding-top: 2rem">
+                    <span class="iconfont" @click="goToUser">&#xe651;</span>
+                </van-row>
+                <van-row type="flex" justify="center">
+                    <span>个人中心</span>
+                </van-row>
+            </van-col>
+            <van-col span="10" style="background-color: #fed76f">
+                <van-row type="flex" justify="center" style="padding-top: 2rem">
+                    <span class="iconfont" @click="goToLogin">&#xe642;</span>
+                </van-row>
+                <van-row type="flex" justify="center">
+                    <span>欢迎您，何喆！</span>
+                </van-row>
+            </van-col>
+        </van-row>
     </div>
 </template>
 
 <script>
     import DishSwipe from "../dishes/DishSwipe.vue";
+
     export default {
         name: "Announcement",
         components: {
             DishSwipe
+        },
+        methods: {
+            goToDish(){
+                this.$router.push({name:'dish'});
+            },
+            goToOrder(){
+                this.$router.push({name:'order'});
+            },
+            goToUser(){
+                this.$router.push({name:'user'});
+            },
+            goToLogin(){
+                this.$router.push({name:'login'});
+            }
         }
     }
 </script>
 
 <style scoped>
+    html {
+        font-size: calc(100vw);
+    }
 
+    @font-face {
+        font-family: 'iconfont';
+        src: url('../../assets/IconFont/iconfont.eot');
+        src: url('../../assets/IconFont/iconfont.eot?#iefix') format('embedded-opentype'),
+        url('../../assets/IconFont/iconfont.woff2') format('woff2'),
+        url('../../assets/IconFont/iconfont.woff') format('woff'),
+        url('../../assets/IconFont/iconfont.ttf') format('truetype'),
+        url('../../assets/IconFont/iconfont.svg#iconfont') format('svg');
+    }
+
+    .iconfont {
+        font-family: "iconfont";
+        font-size: 3rem;
+        font-style: normal;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 </style>

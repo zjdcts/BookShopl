@@ -1,5 +1,5 @@
 <template>
-    <div style="background-color: deepskyblue">
+    <div>
         <van-row type="flex" justify="center">
             <van-col span="23">
                 <van-icon name="arrow-left" class="iconStyle" size="20px" @click="goBack"></van-icon>
@@ -59,13 +59,25 @@
                 <div style="padding-top: 20px">
                     <van-cell-group>
                         <van-cell title="订单备注" is-link value="口味、偏好"></van-cell>
-                        <van-cell title="餐具份数" is-link value="未选择"></van-cell>
-                        <van-popup v-model="dishNum" position="bottom" @click-overlay="closePopUp" @open="choosePayStyle">
-
+                        <van-cell title="餐具份数" is-link :value="dishNumValue" @click="showDishNum"></van-cell>
+                        <van-popup v-model="dishNum" position="bottom" @click-overlay="closeDishNum">
+                            <van-picker
+                                    show-toolbar
+                                    title="餐具份数"
+                                    :columns="columns"
+                                    @cancel="closeDishNum"
+                                    @confirm="updateDishNum"
+                            />
                         </van-popup>
                         <van-cell title="发票信息" is-link value="未选择"></van-cell>
                     </van-cell-group>
                 </div>
+                <van-cell-group>
+                    <van-cell :border="otherCellshow"></van-cell>
+                    <van-cell :border="otherCellshow"></van-cell>
+                    <van-cell :border="otherCellshow"></van-cell>
+                    <van-cell :border="otherCellshow"></van-cell>
+                </van-cell-group>
             </van-col>
         </van-row>
         <van-submit-bar
@@ -87,6 +99,9 @@
                 aliColor: "grey",
                 weiXinColor: "grey",
                 payStyle: "支付宝",
+                dishNum: false,
+                columns: ['0','1', '2', '3', '4', '5','6', '7', '8', '9', '10', '更多'],
+                dishNumValue: "未选择",
             }
         },
         methods: {
@@ -95,6 +110,16 @@
             },
             closePopUp() {
                 this.show = false;
+            },
+            showDishNum() {
+                this.dishNum = true;
+            },
+            closeDishNum() {
+                this.dishNum = false
+            },
+            updateDishNum(value) {
+                this.dishNumValue = value;
+                this.dishNum = false;
             },
             aliActive() {
                 this.payStyle = "支付宝";
@@ -134,7 +159,7 @@
         padding-bottom: 50px;
     }
     .dishTitle {
-        font-size: large;
+        font-size: 20px;
         font-style: normal;
         font-family: "Microsoft YaHei";
         font-weight: bold;

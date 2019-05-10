@@ -9,8 +9,10 @@
                     left-arrow
                     @click-left="onClickLeft"
                     @click-right="onClickRight"
-            />
-            <DishSwipe style="padding-top: 45px"></DishSwipe>
+            >
+                <span class="iconfont" slot="right">&#xe70c;</span>
+            </van-nav-bar>
+            <DishSwipe style="padding-top: 46px"></DishSwipe>
             <DishNavBar></DishNavBar>
         </van-row>
     </div>
@@ -42,5 +44,22 @@
 </script>
 
 <style scoped>
+    @font-face {
+        font-family: 'iconfont';
+        src: url('../../assets/IconFont/iconfont.eot');
+        src: url('../../assets/IconFont/iconfont.eot?#iefix') format('embedded-opentype'),
+        url('../../assets/IconFont/iconfont.woff2') format('woff2'),
+        url('../../assets/IconFont/iconfont.woff') format('woff'),
+        url('../../assets/IconFont/iconfont.ttf') format('truetype'),
+        url('../../assets/IconFont/iconfont.svg#iconfont') format('svg');
+    }
 
+    .iconfont {
+        font-family: "iconfont";
+        font-size: 24px;
+        font-style: normal;
+        line-height: 46px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 </style>

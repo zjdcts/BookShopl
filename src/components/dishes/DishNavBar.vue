@@ -1,7 +1,7 @@
 <template>
     <div>
         <van-row>
-            <van-col span="5" style="font-family: 'Microsoft YaHei';">
+            <van-col span="5" style="font-family: 'Microsoft YaHei'; font-size: 30px">
                 <van-badge-group :active-key="activeKey" @change="onChange">
                     <van-badge v-for="item in dishType" :title="item" :key="item">
                     </van-badge>
@@ -18,7 +18,7 @@
                             <div slot="title" class="dishTitle">
                                 {{dishItem.dishName}}
                             </div>
-                            <div slot="thumb" style="width: 70%; height: 70%;">
+                            <div slot="thumb" style="width: 90px; height: 90px;">
                                 <img class="imgStyle" :src="dishItem.dishPicture">
                             </div>
                             <div slot="footer">
@@ -98,15 +98,20 @@
 </script>
 
 <style scoped>
+    html{
+        font-size: calc(100vw);
+    }
     .dishTitle {
-        font-size: large;
+        font-size: 20px;
         font-style: normal;
         font-family: "Microsoft YaHei";
         font-weight: bold;
     }
     .dishNum {
-        padding-left: 30px;
-        font-size: larger;
+        height: 100%;
+        padding-left: 0.8rem;
+        font-size: 0.9rem;
+        line-height: 50px;
     }
     .imgStyle {
         height: 100%;
