@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App.vue'
-import './plugins/element.js'
 import VueRouter from 'vue-router'
 import Vant from 'vant'
 import 'vant/lib/index.css';
