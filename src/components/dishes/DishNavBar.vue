@@ -1,29 +1,31 @@
 <template>
     <div>
         <van-row>
-            <van-col span="4">
+            <van-col span="5" style="font-family: 'Microsoft YaHei';">
                 <van-badge-group :active-key="activeKey" @change="onChange">
                     <van-badge v-for="item in dishType" :title="item" :key="item">
                     </van-badge>
                 </van-badge-group>
             </van-col>
-            <van-col span="20">
-                <div v-for="dishItem in dishList" :key="dishItem.dishId">
+            <van-col span="19">
+                <div v-for="dishItem in $store.state.dishList" :key="dishItem.dishId">
                     <div v-if="nowDishType==dishItem.dishType">
-                        <van-card
-                                :num="orders[dishItem.dishId]"
+                        <van-card style="background-color: white"
+                                :num="$store.state.orders[dishItem.dishId]"
                                 :price="dishItem.dishPrice"
                                 :desc="dishItem.dishDescription"
-                                :title="dishItem.dishName"
-                                :thumb="dishItem.dishPicture"
                         >
                             <div slot="title" class="dishTitle">
                                 {{dishItem.dishName}}
                             </div>
-                            <div class="dishButton" slot="footer">
+                            <div slot="thumb" style="width: 70%; height: 70%;">
+                                <img class="imgStyle" :src="dishItem.dishPicture">
+                            </div>
+                            <div slot="footer">
                                 <van-stepper disable-input
+                                             integer
                                              min="0"
-                                             :value="orders[dishItem.dishId]"
+                                             :value="$store.state.orders[dishItem.dishId]"
                                              @plus="addNum(dishItem.dishId, dishItem.dishPrice)"
                                              @minus="subNum(dishItem.dishId, dishItem.dishPrice)"
                                 >
@@ -32,69 +34,55 @@
                         </van-card>
                     </div>
                 </div>
-
             </van-col>
         </van-row>
 
         <van-submit-bar
-                :price="commdityPrice"
+                :price="$store.state.commdityPrice"
                 button-text="提交订单"
                 @submit="goToOrderInfo"
         >
-            <span class="dishNum">共选{{commdityNum}}件菜品</span>
+            <span class="dishNum">共选{{$store.state.commdityNum}}件菜品</span>
         </van-submit-bar>
     </div>
 </template>
 <script>
-    //import DishCard from "./DishCard";
-
     export default {
         name: "dishNavBar",
-        //components: {DishCard},
         data() {
             return {
-                active: 2,
-                dishType: null,
-                dishList: null,
-                orders: {},
-                xx: 0,
-                commdityNum: 0,
-                commdityPrice: 0,
-                scrollTop: 0,
+                dishType: Array,
                 activeKey: 0,
-                nowDishType: null
+                nowDishType: String
             }
         },
         created() {
             this.$axios.get("http://localhost:3000/dishlist")
                 .then(response => {
-                    this.dishList = response.data;
-                    for (var i = 1; i < 100; i++) {
-                        this.orders[i] = 0
-                    }
+                    this.$store.state.dishList = response.data;
                 })
             this.$axios.get("http://localhost:3000/dishType")
                 .then(response => {
                     this.dishType = response.data
                     this.nowDishType = this.dishType[0];
-                })
+                });
         },
         methods: {
             addNum: function (index, price) {
-                this.orders[index] += 1;
-                this.commdityNum += 1;
-                this.commdityPrice += price * 100;
-                // eslint-disable-next-line no-console
-                //console.log(this.orders[index]);
+                this.$store.state.commdityNum += 1;
+                this.$store.state.orders[index] += 1;
+                this.$store.state.commdityPrice += price * 100;
+                //eslint-disable-next-line no-console
+                console.log(this.$store.state.orders);
             },
             subNum: function (index, price) {
-                if (this.orders[index] > 0) {
-                    this.orders[index] -= 1;
-                    this.commdityPrice -= price * 100;
-                    this.commdityNum -= 1;
+                if (this.$store.state.orders[index] > 0) {
+                    this.$store.state.commdityNum -= 1;
+                    this.$store.state.orders[index] -= 1;
+                    this.$store.state.commdityPrice -= price * 100;
                 }
                 // eslint-disable-next-line no-console
-                //console.log(this.orders[index]);
+                console.log(this.$store.state.orders);
             },
             onChange(key) {
                 this.activeKey = key;
@@ -102,26 +90,27 @@
                 // eslint-disable-next-line no-console
                 //console.log(this.activeKey)
             },
-            goToOrderInfo(){
-                this.$router.push({name:'orderinfo'})
+            goToOrderInfo() {
+                this.$router.push({name: 'orderinfo'});
             }
         }
     }
 </script>
 
 <style scoped>
-    .dishCard {
-        padding: 5px;
-        font-style: italic;
-    }
-
     .dishTitle {
         font-size: large;
-        font-style: oblique;
+        font-style: normal;
+        font-family: "Microsoft YaHei";
+        font-weight: bold;
     }
-
     .dishNum {
         padding-left: 30px;
         font-size: larger;
+    }
+    .imgStyle {
+        height: 100%;
+        width: 100%;
+        border-radius: 5px;
     }
 </style>

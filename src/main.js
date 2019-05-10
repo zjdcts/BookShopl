@@ -10,28 +10,33 @@ import Vant from 'vant'
 import 'vant/lib/index.css';
 import axios from 'axios';
 import OrderInfo from "./components/orders/OrderInfo";
+import Communication from "./components/Communication";
+import {store} from './store/store'
 
 Vue.config.productionTip = false
 
 
 Vue.use(Vant)
 Vue.use(VueRouter)
-Vue.prototype.$axios=axios
+Vue.prototype.$axios = axios
 
 const routes = [
     {path: '/', component: Announcement},
-    {path: '/dishes', component: Dish},
+    {path: '/dishes', name:'dishes',component: Dish},
     {path: '/orders', component: Order},
-    {path: '/orderinfo', name:'orderinfo',component: OrderInfo},
+    {path: '/orderinfo', name: 'orderinfo', component: OrderInfo},
     {path: '/profile', component: User},
-    {path: '*', redirect:'/'}
+    {path: '/test', component: Communication},
+    {path: '*', redirect: '/'}
 ]
 
 const router = new VueRouter({
     routes,
-    mode:"history"// (缩写) 相当于 routes: routes
+    mode: "history"// (缩写) 相当于 routes: routes
 })
 new Vue({
+    store:store,
     router,
-    render: h => h(App),
+    render: h => h(App)
 }).$mount('#app')
+

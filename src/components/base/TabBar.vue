@@ -12,12 +12,9 @@
 
     export default {
         name: "TabBar",
-        props: {
-            newTitle: Number
-        },
         data() {
             return {
-
+                newTitle:0
             }
         }
     }
