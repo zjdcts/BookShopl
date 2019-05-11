@@ -12,6 +12,7 @@ import Order from "./components/orders/Order";
 import User from "./components/users/User";
 import OrderInfo from "./components/orders/OrderInfo";
 import Login from "./components/login/Login";
+import Register from "./components/login/Register";
 
 Vue.config.productionTip = false
 
@@ -27,6 +28,7 @@ const routes = [
     {path: '/orderinfo', name: 'orderinfo', component: OrderInfo},
     {path: '/profile', name: 'user',component: User},
     {path: '/login', name: 'login',component: Login},
+    {path: '/register', name: 'register',component: Register},
     {path: '*', redirect: '/'}
 ]
 

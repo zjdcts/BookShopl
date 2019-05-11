@@ -17,30 +17,30 @@
                 <van-col span="22">
                     <van-cell-group>
                         <van-field
-                                v-model="phone"
                                 label="手机号"
                                 placeholder="请输入手机号"
                                 size="large"
+                                @input="phoneNumberblur"
                         ></van-field>
                         <van-field
-                                v-model="sms"
                                 center
-                                clearable
                                 label="短信验证码"
                                 placeholder="请输入短信验证码"
                                 size="large"
+                                @input="checkCodeblur"
                         >
                             <van-button slot="button" size="small" type="primary">发送验证码</van-button>
                         </van-field>
                         <van-field
-                                v-model="password"
                                 label="密码"
-                                placeholder="请输入密码"
+                                placeholder="请输入密码（不少于6位）"
                                 size="large"
+                                type="password"
+                                @input="passwordblur"
                         ></van-field>
                     </van-cell-group>
                     <div style="padding-top: 2rem">
-                        <van-button style="background-color: #fed76f;" round size="large">注册</van-button>
+                        <van-button style="background-color: #fed76f;" round size="large" @click="register">注册</van-button>
                     </div>
                 </van-col>
             </van-row>
@@ -50,7 +50,87 @@
 
 <script>
     export default {
-        name: "Register"
+        name: "Register",
+        data() {
+            return {
+                phoneNumber: String,
+                checkCode: String,
+                password: String,
+                isLegal: Boolean,
+                dialogMessage: String
+            }
+        },
+        created() {
+            this.phoneNumber = '';
+            this.checkCode = '';
+            this.password = ''
+            this.dialogMessage = '';
+            this.isLegal = false;
+        },
+        methods: {
+            onClickLeft() {
+                this.$router.push({name: 'announcement'});
+            },
+            onClickRight() {
+
+            },
+            phoneNumberblur(value) {
+                this.phoneNumber = value;
+                // eslint-disable-next-line no-console
+                console.log(this.phoneNumber);
+                if (this.phoneNumber.length == 11) {
+                    this.isLegal = true;
+                    for (var i = 0; i < this.phoneNumber.length; i++) {
+                        if (this.phoneNumber[i] < '0' || this.phoneNumber[i] > '9') {
+                            this.isLegal = false;
+                            break;
+                        }
+                    }
+                }
+            },
+            checkCodeblur(value) {
+                this.checkCode = value;
+            },
+            passwordblur(value) {
+                this.password = value;
+            },
+            register() {
+                if (this.phoneNumber == '' && this.checkCode == '' && this.password == '') {
+                    this.dialogMessage = '手机号、验证码和密码不能为空';
+                    this.$dialog.alert({
+                        message: this.dialogMessage
+                    })
+                } else if (this.phoneNumber == '') {
+                    this.dialogMessage = '手机号不能为空';
+                    this.$dialog.alert({
+                        message: this.dialogMessage
+                    })
+                } else if (!this.isLegal) {
+                    this.dialogMessage = '手机号格式不正确';
+                    this.$dialog.alert({
+                        message: this.dialogMessage
+                    })
+                } else if (this.checkCode == '') {
+                    this.dialogMessage = '验证码不能为空';
+                    this.$dialog.alert({
+                        message: this.dialogMessage
+                    })
+                } else if(this.password == ''){
+                    this.dialogMessage = '密码不能为空';
+                    this.$dialog.alert({
+                        message: this.dialogMessage
+                    })
+                }else if(this.password.length < 6){
+                    this.dialogMessage = '密码不能少于6位';
+                    this.$dialog.alert({
+                        message: this.dialogMessage
+                    })
+                }
+                else {
+                    this.$router.push({name:'announcement'});
+                }
+            }
+        }
     }
 </script>
 

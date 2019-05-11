@@ -3,48 +3,58 @@
         <DishSwipe></DishSwipe>
         <van-row type="flex" justify="center" style="padding-top: 2px; height: 9rem;">
             <van-col span="24" style="background-color: #fec427">
+                <div @click="goToDish" style="height: 100%; width: 100%">
                 <van-row type="flex" justify="center">
-                    <span class="iconfont" style="padding-top: 2rem" @click="goToDish">&#xe63c;</span>
+                    <span class="iconfont" style="padding-top: 2rem">&#xe63c;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
                     <span>点餐</span>
                 </van-row>
+                </div>
             </van-col>
         </van-row>
         <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
             <van-col span="10" style="background-color: #fed76f">
+                <div @click="goToDish" style="height: 100%; width: 100%">
                 <van-row type="flex" justify="center">
                     <span class="iconfont" style="padding-top: 2rem">&#xe615;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
                     <span>预定</span>
                 </van-row>
+                </div>
             </van-col>
-            <van-col span="14" style="background-color: #fec427;">
+            <van-col span="14" style="background-color: #fec427;" @click="goToOrder">
+                <div @click="goToOrder" style="height: 100%; width: 100%">
                 <van-row type="flex" justify="center" style="padding-top: 2rem">
-                    <span class="iconfont" @click="goToOrder">&#xe67c;</span>
+                    <span class="iconfont">&#xe67c;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
                     <span>订单详情</span>
                 </van-row>
+                </div>
             </van-col>
         </van-row>
         <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
-            <van-col span="14" style="background-color: #feebb3">
+            <van-col span="14" style="background-color: #feebb3" @click="goToUser">
+                <div @click="goToUser" style="height: 100%; width: 100%">
                 <van-row type="flex" justify="center" style="padding-top: 2rem">
-                    <span class="iconfont" @click="goToUser">&#xe651;</span>
+                    <span class="iconfont">&#xe651;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
                     <span>个人中心</span>
                 </van-row>
+                </div>
             </van-col>
-            <van-col span="10" style="background-color: #fed76f">
+            <van-col span="10" style="background-color: #fed76f" @click="goToLogin">
+                <div @click="goToLogin" style="height: 100%; width: 100%">
                 <van-row type="flex" justify="center" style="padding-top: 2rem">
-                    <span class="iconfont" @click="goToLogin">&#xe642;</span>
+                    <span class="iconfont">&#xe642;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
                     <span>欢迎您，何喆！</span>
                 </van-row>
+                </div>
             </van-col>
         </van-row>
     </div>
