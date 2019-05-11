@@ -6,6 +6,9 @@ import 'vant/lib/index.css';
 import axios from 'axios';
 import {store} from './store/store'
 
+import './assets/IconFont/iconfont'
+import './assets/IconFont/iconfont.css'
+
 import Announcement from "./components/announcements/Announcement";
 import Dish from "./components/dishes/Dish";
 import Order from "./components/orders/Order";
@@ -13,9 +16,11 @@ import User from "./components/users/User";
 import OrderInfo from "./components/orders/OrderInfo";
 import Login from "./components/login/Login";
 import Register from "./components/login/Register";
+import ChooseTable from "./components/tables/ChooseTable";
+import SubmmitBook from "./components/tables/SubmmitBook";
+import Table from "./components/tables/table"
 
 Vue.config.productionTip = false
-
 
 Vue.use(Vant)
 Vue.use(VueRouter)
@@ -29,6 +34,9 @@ const routes = [
     {path: '/profile', name: 'user',component: User},
     {path: '/login', name: 'login',component: Login},
     {path: '/register', name: 'register',component: Register},
+    {path: '/choosetable', name: 'choosetable',component: ChooseTable},
+    {path: '/booktable', name: 'booktable',component: SubmmitBook},
+    {path: '/table', name: 'table',component: Table},
     {path: '*', redirect: '/'}
 ]
 

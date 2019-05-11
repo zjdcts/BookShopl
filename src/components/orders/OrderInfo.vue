@@ -139,7 +139,7 @@
                 }
             },
             goBack() {
-                this.$router.push({name:'dishes'});
+                this.$router.push({name:'dish'});
             }
         }
     }

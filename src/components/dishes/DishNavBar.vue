@@ -53,15 +53,16 @@
             return {
                 dishType: Array,
                 activeKey: 0,
-                nowDishType: String
+                nowDishType: String,
+                host: this.$store.state.host
             }
         },
         created() {
-            this.$axios.get("http://localhost:3000/dishlist")
+            this.$axios.get(this.host+"/dishlist")
                 .then(response => {
                     this.$store.state.dishList = response.data;
                 })
-            this.$axios.get("http://localhost:3000/dishType")
+            this.$axios.get(this.host+"/dishType")
                 .then(response => {
                     this.dishType = response.data
                     this.nowDishType = this.dishType[0];

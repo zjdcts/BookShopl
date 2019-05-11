@@ -15,7 +15,7 @@
         </van-row>
         <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
             <van-col span="10" style="background-color: #fed76f">
-                <div @click="goToDish" style="height: 100%; width: 100%">
+                <div @click="goToChooseTable" style="height: 100%; width: 100%">
                 <van-row type="flex" justify="center">
                     <span class="iconfont" style="padding-top: 2rem">&#xe615;</span>
                 </van-row>
@@ -52,21 +52,25 @@
                     <span class="iconfont">&#xe642;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
-                    <span>欢迎您，何喆！</span>
+                    <span v-if="$store.state.userPhoneNumber != '未登录'">欢迎您，{{$store.state.userPhoneNumber}}！</span>
+                    <span v-else>未登录</span>
                 </van-row>
                 </div>
             </van-col>
         </van-row>
+        <TabBar></TabBar>
     </div>
 </template>
 
 <script>
     import DishSwipe from "../dishes/DishSwipe.vue";
+    import TabBar from "../base/TabBar";
 
     export default {
         name: "Announcement",
         components: {
-            DishSwipe
+            DishSwipe,
+            TabBar
         },
         methods: {
             goToDish(){
@@ -80,6 +84,9 @@
             },
             goToLogin(){
                 this.$router.push({name:'login'});
+            },
+            goToChooseTable(){
+                this.$router.push({name:'table'})
             }
         }
     }

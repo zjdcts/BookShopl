@@ -30,7 +30,7 @@
         },
         methods: {
             onClickLeft: function () {
-                this.$router.go(-1);
+                this.$router.push({name:'announcement'});
                 // eslint-disable-next-line no-console
                 //console.log(1);
             },
