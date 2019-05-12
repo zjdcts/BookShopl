@@ -1,5 +1,5 @@
 <template>
-    <div style="">
+    <div>
         <van-row type="flex" justify="center" style="padding-top: 46px">
             <van-col span="18">
                 <van-row>
@@ -24,12 +24,15 @@
                 <van-cell title="设置" icon="setting-o" is-link to="index" />
             </van-cell-group>
         </div>
+        <TabBar></TabBar>
     </div>
 </template>
 
 <script>
+    import TabBar from "../base/TabBar";
     export default {
-        name: "user"
+        name: "user",
+        components: {TabBar}
     }
 </script>
 

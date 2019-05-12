@@ -74,13 +74,13 @@
         },
         methods: {
             goToDish(){
-                this.$router.push({name:'dish'});
+                this.$router.push({name:'dish',params:{id:1}});
             },
             goToOrder(){
-                this.$router.push({name:'order'});
+                this.$router.push({name:'order',params:{id:2}});
             },
             goToUser(){
-                this.$router.push({name:'user'});
+                this.$router.push({name:'user',params:{id:3}});
             },
             goToLogin(){
                 this.$router.push({name:'login'});

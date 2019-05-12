@@ -141,7 +141,7 @@
             getTableId(value) {
                 this.tableId = value;
                 // eslint-disable-next-line no-console
-                console.log(this.tableId);
+                //console.log(this.tableId);
             }
         }
     }

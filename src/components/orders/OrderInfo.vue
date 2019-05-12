@@ -13,7 +13,7 @@
                                 <span slot="title" class="payFontStyle">选择支付方式</span>
                             </van-cell>
                             <van-cell is-link center @click="aliActive">
-                                <van-icon slot="icon" name="alipay" color="blue" size="30px"/>
+                                <van-icon slot="icon" name="alipay" color="#03a1e9" size="30px"/>
                                 <van-icon slot="right-icon" name="checked" :color="aliColor" size="15px"/>
                                 <span slot="title" class="chooseFontStyle">支付宝</span>
                             </van-cell>
@@ -39,10 +39,10 @@
                 <div v-for="dishItem in $store.state.dishList" :key="dishItem.dishId">
                     <div v-if="$store.state.orders[dishItem.dishId]!=0">
                         <van-card style="padding-top: 5px; padding-bottom: 5px; background-color: white; height: 50%"
-                                :num="$store.state.orders[dishItem.dishId]"
-                                :price="dishItem.dishPrice"
-                                :desc="dishItem.dishDescription"
-                                :thumb="dishItem.dishPicture"
+                                  :num="$store.state.orders[dishItem.dishId]"
+                                  :price="dishItem.dishPrice"
+                                  :desc="dishItem.dishDescription"
+                                  :thumb="dishItem.dishPicture"
                         >
                             <div slot="title" class="dishTitle">
                                 {{dishItem.dishName}}
@@ -54,11 +54,12 @@
                     </div>
                 </div>
                 <van-cell>
-                    <span slot="title">小计 <span style="font-size: large">￥{{$store.state.commdityPrice/100}}</span></span>
+                    <span slot="title">小计 <span
+                            style="font-size: large">￥{{$store.state.commdityPrice/100}}</span></span>
                 </van-cell>
                 <div style="padding-top: 20px">
                     <van-cell-group>
-                        <van-cell title="订单备注" is-link value="口味、偏好"></van-cell>
+                        <van-cell title="订单备注" is-link value="口味、偏好" @click="goToFav"></van-cell>
                         <van-cell title="餐具份数" is-link :value="dishNumValue" @click="showDishNum"></van-cell>
                         <van-popup v-model="dishNum" position="bottom" @click-overlay="closeDishNum">
                             <van-picker
@@ -100,7 +101,7 @@
                 weiXinColor: "grey",
                 payStyle: "支付宝",
                 dishNum: false,
-                columns: ['0','1', '2', '3', '4', '5','6', '7', '8', '9', '10', '更多'],
+                columns: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '更多'],
                 dishNumValue: "未选择",
             }
         },
@@ -139,7 +140,10 @@
                 }
             },
             goBack() {
-                this.$router.push({name:'dish'});
+                this.$router.push({name: 'dish'});
+            },
+            goToFav() {
+
             }
         }
     }
@@ -150,20 +154,24 @@
         font-size: medium;
         font-family: "Microsoft YaHei";
     }
+
     .chooseFontStyle {
         font-family: "Microsoft YaHei";
         padding-left: 10px;
     }
+
     .iconStyle {
         padding-top: 20px;
         padding-bottom: 50px;
     }
+
     .dishTitle {
         font-size: 20px;
         font-style: normal;
         font-family: "Microsoft YaHei";
         font-weight: bold;
     }
+
     .imgStyle {
         height: 100%;
         width: 100%;

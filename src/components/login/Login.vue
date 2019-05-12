@@ -30,11 +30,12 @@
                                 size="large"
                                 @input="checkCodeblur"
                         >
-                            <van-button slot="button" size="small" type="primary">发送验证码</van-button>
+                            <van-button v-if="isCheckCode" slot="button" size="small" type="primary" @click="cendCheckCode">发送验证码</van-button>
+                            <van-button v-else slot="button" size="small" disabled style="background-color: lightgrey;">重新发送({{checkcodeTime}}s)</van-button>
                         </van-field>
                     </van-cell-group>
                     <van-row type="flex" justify="end">
-                        <a href="" style="color: lightgrey; padding-top: 5px; text-decoration: underline; font-family: 'Microsoft YaHei'" @click="goToRegister">新用户请点这:)</a>
+                        <a style="color: lightgrey; padding-top: 5px; text-decoration: underline; font-family: 'Microsoft YaHei'" @click="goToRegister">新用户请点这:)</a>
                     </van-row>
                     <div style="padding-top: 2rem">
                         <van-button style="background-color: green; color: white" round size="large" @click="login">登录
@@ -54,7 +55,10 @@
                 phoneNumber: String,
                 checkCode: String,
                 isLegal: Boolean,
-                dialogMessage: String
+                dialogMessage: String,
+                isCheckCode:Boolean,
+                checkcodeTime:Number,
+                timer: null
             }
         },
         created() {
@@ -62,6 +66,9 @@
             this.checkCode = '';
             this.dialogMessage = '';
             this.isLegal = false;
+            this.checkCode = '';
+            this.checkcodeTime = 60;
+            this.isCheckCode=true;
         },
         methods: {
             onClickLeft() {
@@ -73,7 +80,7 @@
             phoneNumberblur(value) {
                 this.phoneNumber = value;
                 // eslint-disable-next-line no-console
-                console.log(this.phoneNumber);
+                //console.log(this.phoneNumber);
                 if (this.phoneNumber.length == 11) {
                     this.isLegal = true;
                     for (var i = 0; i < this.phoneNumber.length; i++) {
@@ -86,6 +93,22 @@
             },
             checkCodeblur(value) {
                 this.checkCode = value;
+            },
+            cendCheckCode(){
+                const TIME_COUNT = 60;
+                if (!this.timer) {
+                    this.checkcodeTime = TIME_COUNT;
+                    this.isCheckCode = false;
+                    this.timer = setInterval(() => {
+                        if (this.checkcodeTime > 0 && this.checkcodeTime <= TIME_COUNT) {
+                            this.checkcodeTime--;
+                        } else {
+                            this.isCheckCode = true;
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    }, 1000)
+                }
             },
             login() {
                 if (this.phoneNumber == '' && this.checkCode == '') {

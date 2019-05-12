@@ -11,7 +11,7 @@ export const store = new Vuex.Store({
         commdityNum: 0,
         userId: '未登录',
         userPhoneNumber: '未登录',
-        host:'http://localhost:3000'
+        host:'http://localhost:3000',
     },
     getters: {
 

@@ -30,7 +30,7 @@
                                 </span>
                             </div>
                         </van-cell>
-                        <div v-if="cellDirection[item.table_id-1] == 1">
+                        <div v-show="cellDirection[item.table_id-1] == 1">
                             <van-row type="flex" justify="end">
                                 <van-col span="16">
                                     <van-cell-group>

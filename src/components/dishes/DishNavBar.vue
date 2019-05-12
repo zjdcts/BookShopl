@@ -11,9 +11,9 @@
                 <div v-for="dishItem in $store.state.dishList" :key="dishItem.dishId">
                     <div v-if="nowDishType==dishItem.dishType">
                         <van-card style="background-color: white"
-                                :num="$store.state.orders[dishItem.dishId]"
-                                :price="dishItem.dishPrice"
-                                :desc="dishItem.dishDescription"
+                                  :num="$store.state.orders[dishItem.dishId]"
+                                  :price="dishItem.dishPrice"
+                                  :desc="dishItem.dishDescription"
                         >
                             <div slot="title" class="dishTitle">
                                 {{dishItem.dishName}}
@@ -42,8 +42,30 @@
                 button-text="提交订单"
                 @submit="goToOrderInfo"
         >
-            <span class="dishNum">共选{{$store.state.commdityNum}}件菜品</span>
+            <van-icon name="shopping-cart-o" size="25px" :info="$store.state.commdityNum"
+                      style="line-height: 50px; padding-left: 20px" @click="showShopCart"/>
         </van-submit-bar>
+        <van-popup v-model="show" class="popUp">
+            <van-cell :title="'已选'+$store.state.commdityNum+'件商品'"></van-cell>
+            <div v-for="dishItem in $store.state.dishList" :key="dishItem.dishId">
+                <div v-show="$store.state.orders[dishItem.dishId]!=0">
+                    <van-cell-group>
+                        <van-cell :title="dishItem.dishName">
+                            <div slot="right-icon">
+                                <van-stepper disable-input
+                                             integer
+                                             min="0"
+                                             :value="$store.state.orders[dishItem.dishId]"
+                                             @plus="addNum(dishItem.dishId, dishItem.dishPrice)"
+                                             @minus="subNum(dishItem.dishId, dishItem.dishPrice)"
+                                >
+                                </van-stepper>
+                            </div>
+                        </van-cell>
+                    </van-cell-group>
+                </div>
+            </div>
+        </van-popup>
     </div>
 </template>
 <script>
@@ -54,15 +76,16 @@
                 dishType: Array,
                 activeKey: 0,
                 nowDishType: String,
-                host: this.$store.state.host
+                host: this.$store.state.host,
+                show: false
             }
         },
         created() {
-            this.$axios.get(this.host+"/dishlist")
+            this.$axios.get(this.host + "/dishlist")
                 .then(response => {
                     this.$store.state.dishList = response.data;
                 })
-            this.$axios.get(this.host+"/dishType")
+            this.$axios.get(this.host + "/dishType")
                 .then(response => {
                     this.dishType = response.data
                     this.nowDishType = this.dishType[0];
@@ -74,7 +97,7 @@
                 this.$store.state.orders[index] += 1;
                 this.$store.state.commdityPrice += price * 100;
                 //eslint-disable-next-line no-console
-                console.log(this.$store.state.orders);
+                //console.log(this.$store.state.orders);
             },
             subNum: function (index, price) {
                 if (this.$store.state.orders[index] > 0) {
@@ -82,8 +105,10 @@
                     this.$store.state.orders[index] -= 1;
                     this.$store.state.commdityPrice -= price * 100;
                 }
+                if (this.$store.state.commdityNum == 0)
+                    this.show = false
                 // eslint-disable-next-line no-console
-                console.log(this.$store.state.orders);
+                //console.log(this.$store.state.orders);
             },
             onChange(key) {
                 this.activeKey = key;
@@ -92,31 +117,53 @@
                 //console.log(this.activeKey)
             },
             goToOrderInfo() {
-                this.$router.push({name: 'orderinfo'});
+                if (this.$store.state.commdityNum != 0)
+                    this.$router.push({name: 'orderinfo'});
+                else {
+                    this.$dialog.alert({
+                        message: '你还没有选择商品！'
+                    })
+                }
+            },
+            showShopCart() {
+                if (this.$store.state.commdityNum != 0)
+                    this.show = true;
+                else {
+                    this.$dialog.alert({
+                        message: '你还没有选择商品！'
+                    })
+                }
             }
         }
     }
 </script>
 
 <style scoped>
-    html{
+    html {
         font-size: calc(100vw);
     }
+
     .dishTitle {
         font-size: 20px;
         font-style: normal;
         font-family: "Microsoft YaHei";
         font-weight: bold;
     }
+
     .dishNum {
         height: 100%;
         padding-left: 0.8rem;
         font-size: 0.9rem;
         line-height: 50px;
     }
+
     .imgStyle {
         height: 100%;
         width: 100%;
         border-radius: 5px;
+    }
+
+    .popUp {
+        width: 100vw;
     }
 </style>
