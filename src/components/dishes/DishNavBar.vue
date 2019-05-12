@@ -81,11 +81,11 @@
             }
         },
         created() {
-            this.$axios.get(this.host + "/dishlist")
+            this.$axios.get(this.$store.state.host + "/dishlist")
                 .then(response => {
                     this.$store.state.dishList = response.data;
                 })
-            this.$axios.get(this.host + "/dishType")
+            this.$axios.get(this.$store.state.host + "/dishType")
                 .then(response => {
                     this.dishType = response.data
                     this.nowDishType = this.dishType[0];

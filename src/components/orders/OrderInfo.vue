@@ -4,6 +4,7 @@
             <van-col span="23">
                 <van-icon name="arrow-left" class="iconStyle" size="20px" @click="goBack"></van-icon>
                 <van-cell-group>
+                    <van-field label="餐桌编号" placeholder="请输入餐桌编号" @input="getTableId"/>
                     <van-cell title="上菜时间" center value="内容"/>
                     <van-cell title="支付方式" center is-link :value="payStyle" @click="showPayStyle"/>
                     <van-popup v-model="show" position="bottom" @click-overlay="closePopUp" @open="choosePayStyle">
@@ -85,6 +86,7 @@
                 :price="$store.state.commdityPrice"
                 button-text="确认支付"
                 button-type="primary"
+                @submit="confirmPay"
         >
         </van-submit-bar>
     </div>
@@ -103,6 +105,7 @@
                 dishNum: false,
                 columns: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '更多'],
                 dishNumValue: "未选择",
+                tableId: ''
             }
         },
         methods: {
@@ -144,6 +147,18 @@
             },
             goToFav() {
 
+            },
+            confirmPay() {
+                if (this.tableId.valueOf(Number) <= 0 || this.tableId.valueOf(Number) > this.$store.state.tableCount) {
+                    this.$dialog.alert({
+                        message: '餐桌编号不存在！'
+                    })
+                }
+            },
+            getTableId(value) {
+                this.tableId = value;
+                // eslint-disable-next-line no-console
+                //console.log(this.tableId);
             }
         }
     }
