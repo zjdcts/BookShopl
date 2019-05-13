@@ -13,6 +13,8 @@ export const store = new Vuex.Store({
         userId: '未登录',
         userPhoneNumber: '未登录',
         host:'http://localhost:3000',
+        phoneNumber: '',
+        password: ''
     },
     getters: {
 

@@ -4,8 +4,6 @@
                 title="餐桌预定情况"
                 left-arrow
                 @click-left="onClickLeft"
-                right-text="餐桌预定"
-                @click-right="bookTable"
         />
         <van-row type="flex" justify="center">
             <van-col span="22">
@@ -34,6 +32,8 @@
                             <van-row type="flex" justify="end">
                                 <van-col span="16">
                                     <van-cell-group>
+                                        <van-cell is-link title="点此预定:)" @click="bookTable(item.table_id)"></van-cell>
+                                        <van-cell title="已预定列表"></van-cell>
                                         <van-cell border v-for="(bookTimes,index2) in item.book_times" :key="index2"
                                                   :title="bookTimes.book_date+' '+getTime(bookTimes.book_time)"
                                                   style="font-family: 'Microsoft YaHei';"
@@ -96,8 +96,8 @@
             onClickLeft() {
                 this.$router.push({name: 'table'})
             },
-            bookTable() {
-                this.$router.push({name: 'booktable', params:{id:this.tableCount}});
+            bookTable(index) {
+                this.$router.push({name: 'booktable', params:{id:index}});
             },
             changeDirection(index) {
                 // eslint-disable-next-line no-console

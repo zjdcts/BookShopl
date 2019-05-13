@@ -17,6 +17,7 @@
                 <van-col span="22">
                     <van-cell-group>
                         <van-field
+                                v-model="$store.state.phoneNumber"
                                 label="手机号"
                                 placeholder="请输入手机号"
                                 size="large"
@@ -29,7 +30,12 @@
                                 size="large"
                                 @input="checkCodeblur"
                         >
-                            <van-button slot="button" size="small" type="primary">发送验证码</van-button>
+                            <van-button v-if="isCheckCode" slot="button" size="small" type="primary"
+                                        @click="cendCheckCode">发送验证码
+                            </van-button>
+                            <van-button v-else slot="button" size="small" disabled style="background-color: lightgrey;">
+                                重新发送({{checkcodeTime}}s)
+                            </van-button>
                         </van-field>
                         <van-field
                                 label="密码"
@@ -40,7 +46,8 @@
                         ></van-field>
                     </van-cell-group>
                     <div style="padding-top: 2rem">
-                        <van-button style="background-color: #fed76f;" round size="large" @click="register">注册</van-button>
+                        <van-button style="background-color: #fed76f;" round size="large" @click="register">注册
+                        </van-button>
                     </div>
                 </van-col>
             </van-row>
@@ -53,19 +60,22 @@
         name: "Register",
         data() {
             return {
-                phoneNumber: String,
                 checkCode: String,
                 password: String,
                 isLegal: Boolean,
-                dialogMessage: String
+                dialogMessage: String,
+                isCheckCode: Boolean,
+                checkcodeTime: Number
             }
         },
         created() {
-            this.phoneNumber = '';
             this.checkCode = '';
             this.password = ''
             this.dialogMessage = '';
             this.isLegal = false;
+            this.isCheckCode = true;
+            this.checkcodeTime = 60;
+            this.$store.state.phoneNumber = '';
         },
         methods: {
             onClickLeft() {
@@ -75,13 +85,13 @@
 
             },
             phoneNumberblur(value) {
-                this.phoneNumber = value;
+                this.$store.state.phoneNumber = value;
                 // eslint-disable-next-line no-console
-                console.log(this.phoneNumber);
-                if (this.phoneNumber.length == 11) {
+                //console.log(this.$store.state.phoneNumber);
+                if (this.$store.state.phoneNumber == 11) {
                     this.isLegal = true;
-                    for (var i = 0; i < this.phoneNumber.length; i++) {
-                        if (this.phoneNumber[i] < '0' || this.phoneNumber[i] > '9') {
+                    for (var i = 0; i < this.$store.state.phoneNumber.length; i++) {
+                        if (this.$store.state.phoneNumber[i] < '0' || this.$store.state.phoneNumber[i] > '9') {
                             this.isLegal = false;
                             break;
                         }
@@ -95,12 +105,12 @@
                 this.password = value;
             },
             register() {
-                if (this.phoneNumber == '' && this.checkCode == '' && this.password == '') {
+                if (this.$store.state.phoneNumber == '' && this.checkCode == '' && this.password == '') {
                     this.dialogMessage = '手机号、验证码和密码不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                } else if (this.phoneNumber == '') {
+                } else if (this.$store.state.phoneNumber == '') {
                     this.dialogMessage = '手机号不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
@@ -115,19 +125,44 @@
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                } else if(this.password == ''){
+                } else if (this.password == '') {
                     this.dialogMessage = '密码不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                }else if(this.password.length < 6){
+                } else if (this.password.length < 6) {
                     this.dialogMessage = '密码不能少于6位';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
+                } else {
+                    this.$router.push({name: 'announcement'});
                 }
-                else {
-                    this.$router.push({name:'announcement'});
+            },
+            cendCheckCode() {
+                if (this.$store.state.phoneNumber == '') {
+                    this.$dialog.alert({
+                        message: '未填写手机号！'
+                    })
+                } else if (!this.isLegal) {
+                    this.$dialog.alert({
+                        message: '手机号不合法！'
+                    })
+                } else {
+                    const TIME_COUNT = 60;
+                    if (!this.timer) {
+                        this.checkcodeTime = TIME_COUNT;
+                        this.isCheckCode = false;
+                        this.timer = setInterval(() => {
+                            if (this.checkcodeTime > 0 && this.checkcodeTime <= TIME_COUNT) {
+                                this.checkcodeTime--;
+                            } else {
+                                this.isCheckCode = true;
+                                clearInterval(this.timer);
+                                this.timer = null;
+                            }
+                        }, 1000)
+                    }
                 }
             }
         }

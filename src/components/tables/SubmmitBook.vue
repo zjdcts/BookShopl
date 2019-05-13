@@ -20,7 +20,7 @@
                                         v-model="tableId"
                                         label="餐桌编号"
                                         size="large"
-                                        @input="getTableId"
+                                        disabled
                                 ></van-field>
                                 <van-field
                                         v-model="bookDate"
@@ -86,14 +86,13 @@
                 bookDate: '',
                 nowChoose: '',
                 radio: '1',
-                tableCount: 0
             }
         },
         created() {
-            this.tableCount = this.$route.params.id;
             this.currentDate = new Date();
             this.minDate = new Date();
             this.maxDate = new Date(2021, 1, 1);
+            this.tableId = this.$route.params.id;
         },
         methods: {
             onClickLeft() {
@@ -108,11 +107,7 @@
                     this.$dialog.alert({
                         message: '请先填写餐桌号'
                     })
-                } else if (this.tableId.valueOf(Number) <= 0 || this.tableId.valueOf(Number) > this.tableCount) {
-                    this.$dialog.alert({
-                        message: '餐桌号不存在！'
-                    })
-                } else {
+                }  else {
                     this.$router.push({name: 'table'});
                 }
             },
