@@ -52,8 +52,7 @@
                     <span class="iconfont">&#xe642;</span>
                 </van-row>
                 <van-row type="flex" justify="center">
-                    <span v-if="$store.state.userPhoneNumber != '未登录'">欢迎您，{{$store.state.userPhoneNumber}}！</span>
-                    <span v-else>未登录</span>
+                    <span>{{$store.state.userPhoneNumber}}</span>
                 </van-row>
                 </div>
             </van-col>
@@ -74,19 +73,67 @@
         },
         methods: {
             goToDish(){
-                this.$router.push({name:'dish',params:{id:1}});
+                this.$router.push({name:'dish'});
             },
             goToOrder(){
-                this.$router.push({name:'order',params:{id:2}});
+                this.$axios.post(this.$store.state.host+'/users/refresh/',{
+                    refresh: localStorage.getItem('refresh_token')
+                })
+                    .then(data => {
+                        localStorage.setItem("currentUser_token", data.data.access);
+                        this.$router.push({name:'order',params:{id:2}});
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        console.log(error);
+                        localStorage.setItem('currentUser_token', undefined);
+                        this.$dialog.alert({
+                            message:'请先登录或注册！'
+                        });
+                        this.$store.state.userPhoneNumber = '未登录';
+                        this.$router.push({name:'login'});
+                    });
             },
             goToUser(){
-                this.$router.push({name:'user',params:{id:3}});
+                this.$axios.post(this.$store.state.host+'/users/refresh/',{
+                    refresh: localStorage.getItem('refresh_token')
+                })
+                    .then(data => {
+                        localStorage.setItem("currentUser_token", data.data.access);
+                        this.$router.push({name:'user',params:{id:3}});
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        console.log(error);
+                        localStorage.setItem('currentUser_token', undefined);
+                        this.$dialog.alert({
+                            message:'请先登录或注册！'
+                        });
+                        this.$store.state.userPhoneNumber = '未登录';
+                        this.$router.push({name:'login'});
+                    });
             },
             goToLogin(){
                 this.$router.push({name:'login'});
             },
             goToChooseTable(){
-                this.$router.push({name:'table'})
+                this.$axios.post(this.$store.state.host+'/users/refresh/',{
+                    "refresh": localStorage.getItem("refresh_token")
+                })
+                    .then(data => {
+                        localStorage.setItem("currentUser_token", data.data.access);
+                        this.$router.push({name:'table'});
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        console.log(error);
+                        localStorage.setItem("currentUser_token", undefined);
+                        this.$dialog.alert({
+                            message:'请先登录或注册！'
+                        });
+                        this.$store.state.userPhoneNumber = '未登录';
+                        this.$router.push({name:'login'});
+                    });
             }
         }
     }

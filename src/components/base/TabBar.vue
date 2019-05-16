@@ -13,7 +13,7 @@
         name: "TabBar",
         data() {
             return {
-                newTitle:0,
+                newTitle: 0,
             }
         },
         created() {

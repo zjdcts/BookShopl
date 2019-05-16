@@ -3,10 +3,10 @@
         <van-row type="flex" justify="center" style="padding-top: 46px">
             <van-col span="18">
                 <van-row>
-                    <span style="font-family: 'Microsoft YaHei';font-size: 2rem">{{$store.state.userId}}</span>
+                    <span style="font-family: 'Microsoft YaHei';font-size: 2rem">{{$store.state.userPhoneNumber}}</span>
                 </van-row>
                 <van-row>
-                    <span v-if="$store.state.userId != '未登录'" style="color: lightgrey;">再忙，也要记得吃饭哟~</span>
+                    <span v-if="$store.state.userPhoneNumber !== '未登录'" style="color: lightgrey;">再忙，也要记得吃饭哟~</span>
                 </van-row>
             </van-col>
             <van-col span="4">

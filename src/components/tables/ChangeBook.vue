@@ -8,7 +8,7 @@
             />
             <div style="padding-top: 3rem">
                 <van-row type="flex" justify="center">
-                    <span style="font-family: 'Microsoft YaHei';font-size: xx-large">欢迎预定！</span>
+                    <span style="font-family: 'Microsoft YaHei';font-size: xx-large">修改预定时间</span>
                 </van-row>
             </div>
             <div style="padding-top: 4rem; font-family: 'Microsoft YaHei'">
@@ -77,10 +77,11 @@
 
 <script>
     export default {
-        name: "SubmmitBook",
+        name: "changeBook",
         data() {
             return {
-                tableId: '',
+                tableId: Number,
+                recordId: Number,
                 show: false,
                 currentDate: '',
                 minDate: '',
@@ -97,10 +98,11 @@
             this.minDate = this.currentDate;
             this.maxDate = new Date(2021, 1, 1);
             this.tableId = this.$route.params.id;
+            this.recordId = this.$route.params.recordId;
         },
         methods: {
             onClickLeft() {
-                this.$router.push({name: 'choosetable'});
+                this.$router.push({name: 'table'});
             },
             bookTable() {
                 if (this.bookDate === '') {
@@ -113,10 +115,10 @@
                     })
                 } else {
                     this.$axios({
-                        method: 'post',
-                        url: this.host + '/tables/books',
+                        method: 'put',
+                        url: this.host + '/tables/books/' + this.recordId + '/update',
                         headers: {
-                            "Authorization": "Bearer "+localStorage.getItem('currentUser_token')
+                            "Authorization": "Bearer " + localStorage.getItem('currentUser_token')
                         },
                         data: {
                             "table": this.tableId,
@@ -133,7 +135,7 @@
                             // eslint-disable-next-line no-console
                             console.log(error);
                             this.$dialog.alert({
-                                message:'出现错误，请重试！'
+                                message: '出现错误，请重试！'
                             })
                         })
                 }
@@ -147,6 +149,8 @@
             },
             getNowChoose(picker) {
                 this.isChange = true;
+                // eslint-disable-next-line no-console
+                //console.log(picker.getValues())
                 let value = picker.getValues();
                 this.nowChoose += value[0];
                 for (let i = 1; i < value.length; i++)
@@ -168,6 +172,9 @@
             },
             changeRadio(index) {
                 this.radio = index;
+            },
+            getTableId(value) {
+                this.tableId = value;
             }
         }
     }

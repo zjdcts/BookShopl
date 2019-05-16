@@ -9,7 +9,7 @@
         />
         <div style="padding-top: 3rem">
             <van-row type="flex" justify="center">
-                <span style="font-family: 'Microsoft YaHei';font-size: xx-large">欢迎注册！</span>
+                <span style="font-family: 'Microsoft YaHei',serif;font-size: xx-large">欢迎注册！</span>
             </van-row>
         </div>
         <div style="padding-top: 4rem">
@@ -24,6 +24,7 @@
                                 @input="phoneNumberblur"
                         ></van-field>
                         <van-field
+                                v-model="$store.state.checkCode"
                                 center
                                 label="短信验证码"
                                 placeholder="请输入短信验证码"
@@ -39,6 +40,7 @@
                         </van-field>
                         <van-field
                                 label="密码"
+                                v-model="$store.state.password"
                                 placeholder="请输入密码（不少于6位）"
                                 size="large"
                                 type="password"
@@ -60,22 +62,21 @@
         name: "Register",
         data() {
             return {
-                checkCode: String,
-                password: String,
                 isLegal: Boolean,
                 dialogMessage: String,
                 isCheckCode: Boolean,
-                checkcodeTime: Number
+                checkcodeTime: Number,
+                host: this.$store.state.host
             }
         },
         created() {
-            this.checkCode = '';
-            this.password = ''
             this.dialogMessage = '';
             this.isLegal = false;
             this.isCheckCode = true;
             this.checkcodeTime = 60;
             this.$store.state.phoneNumber = '';
+            this.$store.state.password = '';
+            this.$store.state.checkCode = '';
         },
         methods: {
             onClickLeft() {
@@ -85,32 +86,35 @@
 
             },
             phoneNumberblur(value) {
+                this.isLegal = false;
                 this.$store.state.phoneNumber = value;
                 // eslint-disable-next-line no-console
-                //console.log(this.$store.state.phoneNumber);
-                if (this.$store.state.phoneNumber == 11) {
+                console.log(this.$store.state.phoneNumber);
+                if (this.$store.state.phoneNumber.length === 11) {
                     this.isLegal = true;
-                    for (var i = 0; i < this.$store.state.phoneNumber.length; i++) {
+                    for (let i = 0; i < this.$store.state.phoneNumber.length; i++) {
                         if (this.$store.state.phoneNumber[i] < '0' || this.$store.state.phoneNumber[i] > '9') {
                             this.isLegal = false;
                             break;
                         }
                     }
                 }
+                // eslint-disable-next-line no-console
+                console.log(this.isLegal);
             },
             checkCodeblur(value) {
-                this.checkCode = value;
+                this.$store.state.checkCode = value;
             },
             passwordblur(value) {
-                this.password = value;
+                this.$store.state.password = value;
             },
             register() {
-                if (this.$store.state.phoneNumber == '' && this.checkCode == '' && this.password == '') {
+                if (this.$store.state.phoneNumber === '' && this.checkCode === '' && this.password === '') {
                     this.dialogMessage = '手机号、验证码和密码不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                } else if (this.$store.state.phoneNumber == '') {
+                } else if (this.$store.state.phoneNumber === '') {
                     this.dialogMessage = '手机号不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
@@ -120,27 +124,49 @@
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                } else if (this.checkCode == '') {
+                } else if (this.$store.state.checkCode === '') {
                     this.dialogMessage = '验证码不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                } else if (this.password == '') {
+                } else if (this.$store.state.password === '') {
                     this.dialogMessage = '密码不能为空';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
-                } else if (this.password.length < 6) {
+                } else if (this.$store.state.password.length < 6) {
                     this.dialogMessage = '密码不能少于6位';
                     this.$dialog.alert({
                         message: this.dialogMessage
                     })
                 } else {
-                    this.$router.push({name: 'announcement'});
+                    this.$axios.post(this.host + '/users/register/', {
+                        phone_number: this.$store.state.phoneNumber,
+                        code: this.$store.state.checkCode,
+                        password: this.$store.state.password
+                    })
+                        .then(data => {
+                            this.$store.commit("setUser", {
+                                    "user_name": data.data.username,
+                                    "user_token": data.data.access,
+                                    "refresh_token": data.data.refresh
+                                },
+                                this.$store.state.userPhoneNumber = data.data.username
+                            );
+                            this.$router.push({name: 'announcement'});
+                        })
+                        .catch(function (error) {
+                            // eslint-disable-next-line no-console
+                            console.log(error);
+                            this.$dialog.alert({
+                                message: '此手机号已注册,请直接登录！'
+                            });
+                            this.$store.phoneNumber = '未登录'
+                        })
                 }
             },
             cendCheckCode() {
-                if (this.$store.state.phoneNumber == '') {
+                if (this.$store.state.phoneNumber === '') {
                     this.$dialog.alert({
                         message: '未填写手机号！'
                     })
@@ -149,20 +175,35 @@
                         message: '手机号不合法！'
                     })
                 } else {
-                    const TIME_COUNT = 60;
-                    if (!this.timer) {
-                        this.checkcodeTime = TIME_COUNT;
-                        this.isCheckCode = false;
-                        this.timer = setInterval(() => {
-                            if (this.checkcodeTime > 0 && this.checkcodeTime <= TIME_COUNT) {
-                                this.checkcodeTime--;
-                            } else {
-                                this.isCheckCode = true;
-                                clearInterval(this.timer);
-                                this.timer = null;
+                    this.$axios.post(this.host + '/users/code/', {
+                        "phone_number": this.$store.state.phoneNumber,
+                        "purpose": 0
+                    })
+                        .then(data => {
+                            // eslint-disable-next-line no-console
+                            console.log(data);
+                            const TIME_COUNT = 60;
+                            if (!this.timer) {
+                                this.checkcodeTime = TIME_COUNT;
+                                this.isCheckCode = false;
+                                this.timer = setInterval(() => {
+                                    if (this.checkcodeTime > 0 && this.checkcodeTime <= TIME_COUNT) {
+                                        this.checkcodeTime--;
+                                    } else {
+                                        this.isCheckCode = true;
+                                        clearInterval(this.timer);
+                                        this.timer = null;
+                                    }
+                                }, 1000)
                             }
-                        }, 1000)
-                    }
+                        })
+                        .catch(error => {
+                            // eslint-disable-next-line no-console
+                            console.log(error);
+                            this.$dialog.alert({
+                                message: '此手机号已注册,请直接登录！'
+                            })
+                        })
                 }
             }
         }

@@ -3,7 +3,7 @@
     <van-row class="swipeSection">
       <van-swipe :autoplay="6000" indicator-color="yellow">
         <van-swipe-item v-for="(image, index) in imges" :key="index">
-          <img class="swipeImg" :src="image.img">
+          <img class="swipeImg" :src="image.img" alt="dish_picture">
         </van-swipe-item>
       </van-swipe>
     </van-row>

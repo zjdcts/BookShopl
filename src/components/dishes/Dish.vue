@@ -31,14 +31,10 @@
         methods: {
             onClickLeft: function () {
                 this.$router.push({name:'announcement'});
-                // eslint-disable-next-line no-console
-                //console.log(1);
             },
             onClickRight: function () {
                 this.$router.push('/');
-                // eslint-disable-next-line no-console
-                //console.log(1);
-            },
+            }
         }
     };
 </script>
@@ -55,7 +51,7 @@
     }
 
     .iconfont {
-        font-family: "iconfont";
+        font-family: "iconfont",serif;
         font-size: 24px;
         font-style: normal;
         line-height: 46px;

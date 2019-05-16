@@ -14,10 +14,17 @@
                         @load="onLoad"
                 >
                     <div v-for="(item,index) in tableList" :key="index">
-                        <van-cell is-link :arrow-direction="cellDirection[item.table_id-1]==0?'':'down'"
+                        <van-cell is-link :arrow-direction="cellDirection[item.table_id-1]===0?'':'down'"
                                   @click="changeDirection(item.table_id-1)"
                         >
                             <span slot="title" style="padding-left: 20px; line-height: 50px">餐桌{{item.table_id}}</span>
+                            <span slot="title" style="padding-left: 10px">
+                                <van-tag color="#ffa631" text-color="white">
+                                    <span v-if="item.table_category === 0">小号</span>
+                                    <span v-else-if="item.table_category === 1">中号</span>
+                                    <span v-else>大号</span>
+                                </van-tag>
+                            </span>
                             <span style="line-height: 50px; padding-right: 10px">点击查看详细情况</span>
                             <van-icon slot="right-icon" name="arrow" style="line-height: 50px"/>
                             <div slot="icon" style="height: 50px;width: 50px;">
@@ -28,7 +35,7 @@
                                 </span>
                             </div>
                         </van-cell>
-                        <div v-show="cellDirection[item.table_id-1] == 1">
+                        <div v-show="cellDirection[item.table_id-1] === 1">
                             <van-row type="flex" justify="end">
                                 <van-col span="16">
                                     <van-cell-group>
@@ -36,7 +43,7 @@
                                         <van-cell title="已预定列表"></van-cell>
                                         <van-cell border v-for="(bookTimes,index2) in item.book_times" :key="index2"
                                                   :title="bookTimes.book_date+' '+getTime(bookTimes.book_time)"
-                                                  style="font-family: 'Microsoft YaHei';"
+                                                  style="font-family: 'Microsoft YaHei',serif;"
                                         >
                                         </van-cell>
                                     </van-cell-group>
@@ -58,23 +65,15 @@
                 list: [],
                 loading: false,
                 finished: false,
-                host: this.$store.state.host,
-                tableList: null,
-                tableCount: 0,
+                tableList: this.$store.state.tableList,
                 totalData: null,
-                cellDirection: []
+                cellDirection: [],
+                host: this.$store.state.host
             };
         },
         created() {
-            this.$axios.get(this.host + "/tableList").then(
-                response => {
-                    this.totalData = response.data;
-                    this.tableList = this.totalData.results;
-                    this.tableCount = this.totalData.count;
-                    for (var i = 0; i < this.tableCount; i++)
-                        this.cellDirection[i] = 0;
-                }
-            )
+            for (let i = 0; i < this.$store.state.tableCount; i++)
+                this.cellDirection[i] = 0;
         },
         computed: {},
         methods: {
@@ -86,9 +85,8 @@
                     }
                     // 加载状态结束
                     this.loading = false;
-
                     // 数据全部加载完成
-                    if (this.list.length >= this.tableCount) {
+                    if (this.list.length >= this.$store.state.tableCount) {
                         this.finished = true;
                     }
                 }, 500);
@@ -97,24 +95,20 @@
                 this.$router.push({name: 'table'})
             },
             bookTable(index) {
-                this.$router.push({name: 'booktable', params:{id:index}});
+                this.$router.push({name: 'booktable', params: {id: index}});
             },
             changeDirection(index) {
-                // eslint-disable-next-line no-console
-                //console.log(index);
-                if (this.cellDirection[index] == 0)
+                if (this.cellDirection[index] === 0)
                     this.cellDirection.splice(index, 1, 1);
                 else
                     this.cellDirection.splice(index, 1, 0);
-                // eslint-disable-next-line no-console
-                //console.log(this.cellDirection[index]);
             },
             getTime(index) {
-                if (index == 1)
+                if (index === 1)
                     return '上午';
-                else if (index == 2)
+                else if (index === 2)
                     return '中午';
-                else if (index == 3)
+                else if (index === 3)
                     return '下午';
                 else
                     return '晚上';
