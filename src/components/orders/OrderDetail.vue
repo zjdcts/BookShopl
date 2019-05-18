@@ -4,9 +4,9 @@
             <van-col span="23">
                 <van-icon name="arrow-left" class="iconStyle" size="20px" @click="goBack"></van-icon>
                 <van-cell-group>
-                    <van-cell title="订单状态" center :value="orderStatus(orderDetail.order_status)"/>
+                    <van-cell title="订单状态" center :value="orderStatus(orderDetail.transaction.order_status)"/>
                     <van-cell title="餐桌编号" center :value="orderDetail.order_table"/>
-                    <van-cell title="支付方式" center :value="orderDetail.pay_method == 0 ? '支付宝' : '微信'"/>
+                    <van-cell title="支付方式" center :value="orderDetail.transaction.pay_method == 0 ? '支付宝' : '微信'"/>
                 </van-cell-group>
                 <div style="padding-top: 20px; padding-bottom: 10px; font-family: 'Microsoft YaHei',serif; ">
                     <van-cell title="菜品列表" center/>
@@ -31,28 +31,22 @@
                 </van-cell>
                 <div style="padding-top: 20px">
                     <van-cell-group>
-                        <van-cell title="下单时间" :value="Date(orderDetail.transaction.order_time).substring(0, 24)"></van-cell>
-                        <van-cell v-if='orderDetail.transaction.order_status === 5' title="确认时间" :value="orderDetail.transaction.order_confirm_time"></van-cell>
+                        <van-cell title="下单时间"
+                                  :value="Date(orderDetail.transaction.order_time).substring(0, 24)"></van-cell>
+                        <van-cell v-if='orderDetail.transaction.order_status === 5' title="确认时间"
+                                  :value="orderDetail.transaction.order_confirm_time"></van-cell>
                         <van-cell title="订单备注" :value="orderDetail.order_script"></van-cell>
                         <van-cell title="餐具份数" :value="orderDetail.table_ware_num"></van-cell>
                         <van-cell title="发票信息" value="未选择"></van-cell>
                     </van-cell-group>
                 </div>
-                <van-cell-group>
-                    <van-cell :border="otherCellshow"></van-cell>
-                    <van-cell :border="otherCellshow"></van-cell>
-                    <van-cell :border="otherCellshow"></van-cell>
-                    <van-cell :border="otherCellshow"></van-cell>
-                </van-cell-group>
+                <div v-if="orderDetail.transaction.order_status === 4" style="padding-top: 20px;">
+                    <van-button type="default" size="large" round style="background-color: #fed76f"
+                                @click="changeOrderState">confirm order
+                    </van-button>
+                </div>
             </van-col>
         </van-row>
-        <!--        <van-submit-bar-->
-        <!--                :price="$store.state.commdityPrice"-->
-        <!--                button-text="确认支付"-->
-        <!--                button-type="primary"-->
-        <!--                @submit="confirmPay"-->
-        <!--        >-->
-        <!--        </van-submit-bar>-->
     </div>
 </template>
 
@@ -62,7 +56,8 @@
         data() {
             return {
                 orderId: Number,
-                orderDetail: null
+                orderDetail: null,
+                host: this.$store.state.host
             }
         },
         created() {
@@ -76,7 +71,7 @@
                 if (index === 0) {
                     return '订单已取消';
                 } else if (index === 1) {
-                    return '已下单;'
+                    return '已下单';
                 } else if (index === 2) {
                     return '订单已支付';
                 } else if (index === 3) {
@@ -86,6 +81,31 @@
                 } else if (index === 5) {
                     return '订单已确认';
                 }
+            },
+            changeOrderState() {
+                this.$axios({
+                    method: 'post',
+                    url: this.host + '/orders/' + this.orderDetail.order_id + '/process/',
+                    hearts: {
+                        "Authorization": "Bearer "+localStorage.getItem('currentUser_token')
+                    },
+                    data: {
+                        order: this.orderDetail.order_id,
+                        order_status: 5
+                    }
+                })
+                    .then(response => {
+                        // eslint-disable-next-line no-console
+                        console.log(response);
+                        this.orderDetail.transaction.order_status = 5;
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        console.log(error);
+                        this.$dialog.alert({
+                            message: 'Error appear'
+                        })
+                    })
             }
         }
     }

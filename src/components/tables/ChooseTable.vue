@@ -75,7 +75,6 @@
             for (let i = 0; i < this.$store.state.tableCount; i++)
                 this.cellDirection[i] = 0;
         },
-        computed: {},
         methods: {
             onLoad() {
                 // 异步更新数据

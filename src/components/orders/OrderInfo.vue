@@ -178,21 +178,22 @@
                     method: 'post',
                     url: this.$store.state.host + '/orders/create',
                     headers: {
-                        "Authorization": "Bearer " + localStorage.getItem('currentUser_token')
+                        Authorization: "Bearer " + localStorage.getItem('currentUser_token')
                     },
                     data: {
-                        "order_table": Number(this.tableId),
-                        "order_price": this.$store.state.commdityPrice / 100,
-                        "order_script": this.message,
-                        "order_status": 1,
-                        "order_detail": this.order_detail,
-                        "table_ware_num": Number(this.dishNumValue),
-                        "pay_method": this.payStyle
+                        order_table: Number(this.tableId),
+                        order_price: this.$store.state.commdityPrice / 100,
+                        order_script: this.message,
+                        order_status: 1,
+                        order_detail: this.order_detail,
+                        table_ware_num: Number(this.dishNumValue),
+                        pay_method: this.payStyle
                     }
                 })
                     .then(response => {
                         // eslint-disable-next-line no-console
                         console.log(response);
+                        this.$router.push({name: 'order'});
                     })
                     .catch(error => {
                         // eslint-disable-next-line no-console

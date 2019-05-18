@@ -13,7 +13,7 @@ export const store = new Vuex.Store({
         tableList: Array,
         dishCount: Number,
         userPhoneNumber: String,
-        host: 'http://120.24.91.195:8000',
+        host: 'http://127.0.0.1:8000',
         phoneNumber: String,
         password: String,
         checkCode: String,

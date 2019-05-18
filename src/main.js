@@ -72,11 +72,11 @@ axios.interceptors.request.use(
     config => {
         return config;
     },
-    err => {
+    error => {
         localStorage.setItem("currentUser_token",'');
         this.$store.state.userPhoneNumber = '未登录';
         this.$router.push({name:'login'});
-        return Promise.reject(err);
+        return Promise.reject(error);
     });
 
 // http response 拦截器
