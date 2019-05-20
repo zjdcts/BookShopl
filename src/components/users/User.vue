@@ -19,12 +19,13 @@
             <van-cell-group>
                 <van-cell title="设置" icon="setting-o" is-link
                           :arrow-direction="this.direction[0] === 0 ? 'up' : 'down'" @click="changeDir(0)"/>
-                <van-cell-group>
-                    <van-cell title="Modify Password" is-link></van-cell>
-                    <van-cell title="Logout" is-link></van-cell>
+                <van-cell-group v-show="direction[0] === 1">
+                    <van-cell title="修改密码" is-link @click="goToModify"></van-cell>
+                    <van-cell title="注销" is-link @click="logout"></van-cell>
                 </van-cell-group>
-                <van-cell title="About Us" icon="like-o" is-link
+                <van-cell title="关于我们" icon="like-o" is-link
                           :arrow-direction="this.direction[1] === 0 ? 'up' : 'down'" @click="changeDir(1)"/>
+                <van-cell v-show="direction[1] === 1">Supported by Vue.js and Vant.</van-cell>
             </van-cell-group>
         </div>
         <TabBar></TabBar>
@@ -39,15 +40,29 @@
         components: {TabBar},
         data() {
             return {
-                direction: Array
+                direction: []
             }
         },
         created() {
-
+            for (let i = 0; i < 2; i++)
+                this.direction[i] = 0;
+            // eslint-disable-next-line no-console
+            //console.log(this.direction);
         },
         methods: {
             changeDir(index) {
-
+                if (this.direction[index] === 0)
+                    this.$set(this.direction, index, 1);
+                else
+                    this.$set(this.direction, index, 0);
+            },
+            goToModify() {
+                this.$router.push({name:'modifypassword'});
+            },
+            logout() {
+                localStorage.setItem("currentUser_token",'');
+                this.$store.state.userPhoneNumber = '未登录';
+                this.$router.push({name: 'login'});
             }
         }
     }

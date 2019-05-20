@@ -16,6 +16,8 @@ export const store = new Vuex.Store({
         host: 'http://127.0.0.1:8000',
         phoneNumber: String,
         password: String,
+        oldPassword: String,
+        newPassword: String,
         checkCode: String,
         currentUser: {
             get UserName() {

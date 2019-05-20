@@ -21,6 +21,7 @@ import SubmmitBook from "./components/tables/SubmmitBook";
 import Table from "./components/tables/table"
 import ChangeBook from "./components/tables/ChangeBook";
 import OrderDetail from "./components/orders/OrderDetail";
+import ModifyPassword from "./components/users/ModifyPassword";
 
 Vue.config.productionTip = false;
 
@@ -41,6 +42,7 @@ const routes = [
     {path: '/table', name: 'table', component: Table},
     {path: '/changebook', name: 'changebook', component: ChangeBook},
     {path: '/orderdetail', name: 'orderdetail', component: OrderDetail},
+    {path: '/modifypassword', name: 'modifypassword', component: ModifyPassword},
     {path: '*', redirect: '/'},
 ];
 
