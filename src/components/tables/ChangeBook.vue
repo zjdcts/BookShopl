@@ -90,7 +90,8 @@
                 nowChoose: '',
                 radio: '1',
                 isChange: false,
-                host: this.$store.state.host
+                host: this.$store.state.host,
+                noUse: null
             }
         },
         created() {
@@ -116,9 +117,9 @@
                 } else {
                     this.$axios({
                         method: 'put',
-                        url: this.host + '/tables/books/' + this.recordId + '/update',
+                        url: 'http://geeking.tech:8000/tables/books/' + this.recordId + '/update',
                         headers: {
-                            "Authorization": "Bearer " + localStorage.getItem('currentUser_token')
+                            "Authorization": "Bearer " + localStorage.getItem('user_token')
                         },
                         data: {
                             "table": this.tableId,
@@ -128,12 +129,14 @@
                     })
                         .then(data => {
                             // eslint-disable-next-line no-console
-                            console.log(data);
+                            //console.log(data);
+                            this.noUse = data;
                             this.$router.push({name: 'table'});
                         })
                         .catch(error => {
                             // eslint-disable-next-line no-console
                             console.log(error);
+                            this.noUse = error;
                             this.$dialog.alert({
                                 message: '出现错误，请重试！'
                             })
@@ -142,12 +145,13 @@
             },
             chooseTime() {
                 this.show = true;
-                this.nowChoose = ''
+                this.nowChoose = '';
             },
             closePopUp() {
                 this.show = false;
             },
             getNowChoose(picker) {
+                this.nowChoose = '';
                 this.isChange = true;
                 // eslint-disable-next-line no-console
                 //console.log(picker.getValues())

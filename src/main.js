@@ -22,6 +22,7 @@ import Table from "./components/tables/table"
 import ChangeBook from "./components/tables/ChangeBook";
 import OrderDetail from "./components/orders/OrderDetail";
 import ModifyPassword from "./components/users/ModifyPassword";
+import Pay from "./components/orders/Pay";
 
 Vue.config.productionTip = false;
 
@@ -43,6 +44,7 @@ const routes = [
     {path: '/changebook', name: 'changebook', component: ChangeBook},
     {path: '/orderdetail', name: 'orderdetail', component: OrderDetail},
     {path: '/modifypassword', name: 'modifypassword', component: ModifyPassword},
+    {path: '/confirmPay', name: 'confirmPay', component: Pay},
     {path: '*', redirect: '/'},
 ];
 
@@ -51,47 +53,47 @@ const router = new VueRouter({
     mode: "history"// (缩写) 相当于 routes: routes
 });
 
-router.beforeEach((to, from, next) => {
-    // ...
-    var token = localStorage.getItem("currentUser_token");
-    // eslint-disable-next-line no-console
-    //console.log(token,to.name);
-    if (to.name === 'login' || to.name === 'register' || to.name === 'announcement' || to.name === 'dish') {
-        next();
-    } else {
-        if (token === '') {
-            next('/login');
-        }
-        else {
-            next();
-        }
-    }
-    next();
-});
+// router.beforeEach((to, from, next) => {
+//     // ...
+//     var token = localStorage.getItem("currentUser_token");
+//     // eslint-disable-next-line no-console
+//     //console.log(token,to.name);
+//     if (to.name === 'login' || to.name === 'register' || to.name === 'announcement' || to.name === 'dish') {
+//         next();
+//     } else {
+//         if (token === '') {
+//             next('/login');
+//         }
+//         else {
+//             next();
+//         }
+//     }
+//     next();
+// });
 
 // http request 拦截器
-axios.interceptors.request.use(
-    config => {
-        return config;
-    },
-    error => {
-        localStorage.setItem("currentUser_token",'');
-        this.$store.state.userPhoneNumber = '未登录';
-        this.$router.push({name:'login'});
-        return Promise.reject(error);
-    });
+// axios.interceptors.request.use(
+//     config => {
+//         return config;
+//     },
+//     error => {
+//         localStorage.setItem("currentUser_token",'');
+//         // this.$store.state.userPhoneNumber = '未登录';
+//         this.$router.push({name:'login'});
+//         return Promise.reject(error);
+//     });
 
 // http response 拦截器
-axios.interceptors.response.use(
-    response => {
-        return response;
-    },
-    error => {
-        localStorage.setItem("currentUser_token",'');
-        this.$store.state.userPhoneNumber = '未登录';
-        this.$router.push({name:'login'});
-        return Promise.reject(error.response.data)   // 返回接口返回的错误信息
-    });
+// axios.interceptors.response.use(
+//     response => {
+//         return response;
+//     },
+//     error => {
+//         localStorage.setItem("currentUser_token",'');
+//         // this.$store.state.userPhoneNumber = '未登录';
+//         this.$router.push({name:'login'});
+//         return Promise.reject(error.response.data)   // 返回接口返回的错误信息
+//     });
 
 new Vue({
     store: store,

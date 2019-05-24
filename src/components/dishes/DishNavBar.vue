@@ -11,7 +11,7 @@
                 <div v-for="(dishItem,index) in dishList" :key="index">
                     <div v-if="nowDishType === dishItem.dish_type">
                         <van-card style="background-color: white"
-                                  :num="$store.state.orders[dishItem.dish_id]"
+                                  :num="getDishNum(dishItem.dish_id)"
                                   :price="dishItem.dish_price"
                                   :desc="dishItem.dish_description"
                         >
@@ -25,7 +25,7 @@
                                 <van-stepper disable-input
                                              integer
                                              min="0"
-                                             :value="$store.state.orders[dishItem.dish_id]"
+                                             :value="getDishNum(dishItem.dish_id)"
                                              @plus="addNum(dishItem.dish_id, dishItem.dish_price)"
                                              @minus="subNum(dishItem.dish_id, dishItem.dish_price)"
                                 >
@@ -37,24 +37,24 @@
             </van-col>
         </van-row>
         <van-submit-bar
-                :price="$store.state.commdityPrice"
+                :price="Number(commdityPrice)"
                 button-text="提交订单"
                 @submit="goToOrderInfo"
         >
-            <van-icon name="shopping-cart-o" size="25px" :info="$store.state.commdityNum"
+            <van-icon name="shopping-cart-o" size="25px" :info="Number(commdityNum)"
                       style="line-height: 50px; padding-left: 20px" @click="showShopCart"/>
         </van-submit-bar>
         <van-popup v-model="show" class="popUp">
-            <van-cell :title="'已选'+$store.state.commdityNum+'件商品'"></van-cell>
+            <van-cell :title="'已选'+commdityNum+'件商品'"></van-cell>
             <div v-for="(dishItem,index) in dishList" :key="index">
-                <div v-show="$store.state.orders[dishItem.dish_id] !== 0">
+                <div v-show="getDishNum(dishItem.dish_id) !== 0">
                     <van-cell-group>
                         <van-cell :title="dishItem.dish_name">
                             <div slot="right-icon">
                                 <van-stepper disable-input
                                              integer
                                              min="0"
-                                             :value="$store.state.orders[dishItem.dish_id]"
+                                             :value="getDishNum(dishItem.dish_id)"
                                              @plus="addNum(dishItem.dish_id, dishItem.dish_price)"
                                              @minus="subNum(dishItem.dish_id, dishItem.dish_price)"
                                 >
@@ -82,18 +82,65 @@
                     paddingTop: '0px',
                     //position: 'relative',
                 },
-                host: this.$store.state.host,
-                dishList: this.$store.state.dishList
+                dishList: Array,
+                userDishNum: [],
+                dishCount: Number,
+                commdityNum: Number,
+                commdityPrice: Number,
+                chooseDish: []
             }
         },
         created() {
             this.activeKey = 0;
             this.show = false;
             this.temp = '';
-            this.$axios.get(this.host + "/dishes/types/")
+            this.$axios.get('http://geeking.tech:8000/dishes/types/')
                 .then(response => {
                     this.dishType = response.data;
                     this.nowDishType = this.dishType[0];
+                });
+            this.$axios.get('http://geeking.tech:8000/dishes/lists/?page_size=500')
+                .then(response => {
+                    // eslint-disable-next-line no-console
+                    console.log(response);
+                    this.dishList = response.data.results;
+                    localStorage.setItem('dishList',JSON.stringify(this.dishList));
+                    let flag = false;
+                    for (let i in this.dishList) {
+                        if (Number(this.dishList[i].dish_price) === 0) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    // eslint-disable-next-line no-console
+                    console.log(flag);
+                    if (localStorage.getItem('user_dish_num') === null) {
+                        for (let item in this.dishList) {
+                            let dishId = this.dishList[item].dish_id;
+                            let dishNum = 0;
+                            this.userDishNum.push({dishId, dishNum});
+                        }
+                        localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                    } else {
+                        this.userDishNum = JSON.parse(localStorage.getItem('user_dish_num'));
+                        for(let i in this.userDishNum){
+                            if(this.userDishNum[i].dishNum !== 0){
+                                this.chooseDish.push({dish_id:this.userDishNum[i].dishId,dish_num:this.userDishNum[i].dishNum});
+                            }
+                        }
+                    }
+                    if (localStorage.getItem('commidity_num') === null) {
+                        localStorage.setItem('commidity_num', '0');
+                        this.commdityNum = 0;
+                    } else {
+                        this.commdityNum = Number(localStorage.getItem('commidity_num'));
+                    }
+                    if (localStorage.getItem('commidity_price') === null) {
+                        localStorage.setItem('commidity_price', '0');
+                        this.commdityPrice = 0;
+                    } else {
+                        this.commdityPrice = Number(localStorage.getItem('commidity_price'));
+                    }
                 });
         },
         mounted() {
@@ -104,26 +151,79 @@
             window.removeEventListener('scroll', this.handleScroll)
         },
         methods: {
+            getDishNum(index) {
+                for (let item in this.userDishNum) {
+                    if (this.userDishNum[item].dishId === index) {
+                        return this.userDishNum[item].dishNum;
+                    }
+                }
+            },
             addNum: function (index, price) {
-                this.$store.state.commdityNum += 1;
-                this.$store.state.orders[index] += 1;
-                this.$store.state.commdityPrice += price * 100;
+                this.commdityNum += 1;
+                localStorage.setItem('commidity_num', String(this.commdityNum));
+                this.commdityPrice += price * 100;
+                localStorage.setItem('commidity_price', String(this.commdityPrice));
+                for (let item in this.userDishNum) {
+                    if (this.userDishNum[item].dishId === index) {
+                        this.userDishNum[item].dishNum++;
+                        break;
+                    }
+                }
+                if (this.chooseDish.length === 0) {
+                    this.chooseDish.push({dish_id: index, dish_num: 1});
+                } else {
+                    let flag = false;
+                    for (let i in this.chooseDish) {
+                        if (this.chooseDish[i].dish_id === index) {
+                            flag = true;
+                            this.chooseDish[i].dish_num++;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        this.chooseDish.push({dish_id: index, dish_num: 1});
+                    }
+                }
+                localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
             },
             subNum: function (index, price) {
-                if (this.$store.state.orders[index] > 0) {
-                    this.$store.state.commdityNum -= 1;
-                    this.$store.state.orders[index] -= 1;
-                    this.$store.state.commdityPrice -= price * 100;
+                this.commdityNum -= 1;
+                localStorage.setItem('commidity_num', String(this.commdityNum));
+                this.commdityPrice -= price * 100;
+                localStorage.setItem('commidity_price', String(this.commdityPrice));
+                for (let item in this.userDishNum) {
+                    if (this.userDishNum[item].dishId === index) {
+                        this.userDishNum[item].dishNum--;
+                        break;
+                    }
                 }
-                if (this.$store.state.commdityNum === 0)
-                    this.show = false
+                if (this.chooseDish.length === 0) {
+                    this.chooseDish.push({dish_id: index, dish_num: 1});
+                } else {
+                    let flag = false;
+                    for (let i in this.chooseDish) {
+                        if (this.chooseDish[i].dish_id === index) {
+                            flag = true;
+                            this.chooseDish[i].dish_num--;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        this.chooseDish.push({dish_id: index, dish_num: 1});
+                    }
+                }
+                localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
+                if (this.commdityNum === 0)
+                    this.show = false;
             },
             onChange(key) {
                 this.activeKey = key;
                 this.nowDishType = this.dishType[key];
             },
             goToOrderInfo() {
-                if (this.$store.state.commdityNum !== 0)
+                if (this.commdityNum !== 0)
                     this.$router.push({name: 'orderinfo'});
                 else {
                     this.$dialog.alert({
@@ -132,7 +232,7 @@
                 }
             },
             showShopCart() {
-                if (this.$store.state.commdityNum !== 0)
+                if (this.commdityNum !== 0)
                     this.show = true;
                 else {
                     this.$dialog.alert({
@@ -160,7 +260,7 @@
     .dishTitle {
         font-size: 20px;
         font-style: normal;
-        font-family: "Microsoft YaHei",serif;
+        font-family: "Microsoft YaHei", serif;
         font-weight: bold;
     }
 

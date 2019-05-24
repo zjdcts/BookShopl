@@ -14,8 +14,8 @@
                         @load="onLoad"
                 >
                     <div v-for="(item,index) in tableList" :key="index">
-                        <van-cell is-link :arrow-direction="cellDirection[item.table_id-1]===0?'':'down'"
-                                  @click="changeDirection(item.table_id-1)"
+                        <van-cell is-link
+                                  @click="changeDirection(item.table_id)"
                         >
                             <span slot="title" style="padding-left: 20px; line-height: 50px">餐桌{{item.table_id}}</span>
                             <span slot="title" style="padding-left: 10px">
@@ -26,7 +26,8 @@
                                 </van-tag>
                             </span>
                             <span style="line-height: 50px; padding-right: 10px">点击查看详细情况</span>
-                            <van-icon slot="right-icon" name="arrow" style="line-height: 50px"/>
+                            <van-icon v-show="cellDirection[item.table_id] === 0" slot="right-icon" name="arrow-up" style="line-height: 50px"/>
+                            <van-icon v-show="cellDirection[item.table_id] === 1" slot="right-icon" name="arrow-down" style="line-height: 50px"/>
                             <div slot="icon" style="height: 50px;width: 50px;">
                                 <span class="svg-container">
                                     <svg class="icon" aria-hidden="true" style="height: 100%;width: 100%;">
@@ -35,7 +36,7 @@
                                 </span>
                             </div>
                         </van-cell>
-                        <div v-show="cellDirection[item.table_id-1] === 1">
+                        <div v-show="cellDirection[item.table_id] === 1">
                             <van-row type="flex" justify="end">
                                 <van-col span="16">
                                     <van-cell-group>
@@ -65,15 +66,38 @@
                 list: [],
                 loading: false,
                 finished: false,
-                tableList: this.$store.state.tableList,
+                tableList: Array,
                 totalData: null,
                 cellDirection: [],
-                host: this.$store.state.host
+                tableCount:Number,
+                noUse: null
             };
         },
         created() {
-            for (let i = 0; i < this.$store.state.tableCount; i++)
-                this.cellDirection[i] = 0;
+            this.$axios({
+                url: 'http://geeking.tech:8000'+'/tables/',
+                method:'get'
+            })
+                .then(response => {
+                    this.tableCount = response.data.count;
+                    this.tableList = response.data.results;
+                    for(let i=0;i<=this.tableCount;i++){
+                        this.cellDirection[i]=0;
+                    }
+                })
+                .catch(error => {
+                    this.noUse = error;
+                    if(this.error.response.status === 401){
+                        this.$dialog.alert({
+                            message: '登录已失效，请重新登录'
+                        });
+                        localStorage.setItem('user_name','');
+                    } else {
+                        this.$dialog.alert({
+                            message: '获取餐桌信息失败，请刷新重试！'
+                        })
+                    }
+                })
         },
         methods: {
             onLoad() {
@@ -85,7 +109,7 @@
                     // 加载状态结束
                     this.loading = false;
                     // 数据全部加载完成
-                    if (this.list.length >= this.$store.state.tableCount) {
+                    if (this.list.length >= this.tableCount) {
                         this.finished = true;
                     }
                 }, 500);
@@ -97,10 +121,14 @@
                 this.$router.push({name: 'booktable', params: {id: index}});
             },
             changeDirection(index) {
+                // eslint-disable-next-line no-console
+                //console.log(this.cellDirection[index]);
                 if (this.cellDirection[index] === 0)
-                    this.cellDirection.splice(index, 1, 1);
+                    this.$set(this.cellDirection, index, 1);
                 else
-                    this.cellDirection.splice(index, 1, 0);
+                    this.$set(this.cellDirection, index, 0);
+                // eslint-disable-next-line no-console
+                //console.log(this.cellDirection[index]);
             },
             getTime(index) {
                 if (index === 1)

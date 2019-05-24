@@ -3,10 +3,10 @@
         <van-row type="flex" justify="center" style="padding-top: 46px">
             <van-col span="18">
                 <van-row>
-                    <span style="font-family: 'Microsoft YaHei';font-size: 2rem">{{$store.state.userPhoneNumber}}</span>
+                    <span style="font-family: 'Microsoft YaHei';font-size: 2rem">{{userName}}</span>
                 </van-row>
                 <van-row>
-                    <span v-if="$store.state.userPhoneNumber !== '未登录'" style="color: lightgrey;">再忙，也要记得吃饭哟~</span>
+                    <span v-if="userName !== '未登录'" style="color: lightgrey;">再忙，也要记得吃饭哟~</span>
                 </van-row>
             </van-col>
             <van-col span="4">
@@ -40,12 +40,16 @@
         components: {TabBar},
         data() {
             return {
-                direction: []
+                direction: [],
+                userName:String
             }
         },
         created() {
             for (let i = 0; i < 2; i++)
                 this.direction[i] = 0;
+            this.userName = localStorage.getItem('user_name');
+            if(this.userName === '')
+                this.userName = '未登录'
             // eslint-disable-next-line no-console
             //console.log(this.direction);
         },
@@ -60,8 +64,8 @@
                 this.$router.push({name:'modifypassword'});
             },
             logout() {
-                localStorage.setItem("currentUser_token",'');
-                this.$store.state.userPhoneNumber = '未登录';
+                localStorage.setItem("user_token",'');
+                localStorage.setItem('user_name','');
                 this.$router.push({name: 'login'});
             }
         }

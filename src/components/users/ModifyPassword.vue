@@ -5,7 +5,6 @@
                 left-arrow
                 border
                 @click-left="onClickLeft"
-                @click-right="onClickRight"
         />
         <div style="padding-top: 3rem">
             <van-row type="flex" justify="center">
@@ -17,7 +16,7 @@
                 <van-col span="22">
                     <van-cell-group>
                         <van-field
-                                v-model="$store.state.oldPassword"
+                                v-model="oldPassword"
                                 label="原密码"
                                 placeholder="请输入原密码"
                                 type="password"
@@ -25,7 +24,7 @@
                                 @input="passwordblur"
                         ></van-field>
                         <van-field
-                                v-model="$store.state.newPassword"
+                                v-model="newPassword"
                                 label="新密码"
                                 placeholder="请输入新密码"
                                 type="password"
@@ -33,7 +32,7 @@
                                 @input="newPasswordblur"
                         ></van-field>
                         <van-field
-                                v-model="$store.state.checkCode"
+                                v-model="checkCode"
                                 center
                                 clearable
                                 label="短信验证码"
@@ -67,41 +66,67 @@
         data() {
             return {
                 isCheckCode: true,
-                host: this.$store.state.host,
-                checkcodeTime: Number
+                checkcodeTime: Number,
+                noUse: null,
+                oldPassword:String,
+                newPassword:String,
+                checkCode:String
             }
         },
         created() {
-            this.$store.state.oldPassword = '';
-            this.$store.state.newPassword = '';
-            this.$store.state.checkCode = '';
+            if(localStorage.getItem('oldPassword')===null){
+                this.oldPassword = '';
+                localStorage.setItem('oldPassword','');
+            } else {
+                this.oldPassword  =localStorage.getItem('oldPassword');
+            }
+            if(localStorage.getItem('newPassword')===null){
+                this.newPassword = '';
+                localStorage.setItem('newPassword','');
+            } else {
+                this.newPassword  =localStorage.getItem('newPassword');
+            }
+            if(localStorage.getItem('checkCode')===null){
+                this.checkCode = '';
+                localStorage.setItem('checkCode','');
+            } else {
+                this.checkCode  =localStorage.getItem('checkCode');
+            }
+        },
+        destroyed(){
+            localStorage.removeItem('oldPassword');
+            localStorage.removeItem('newPassword');
+            localStorage.removeItem('checkCode');
         },
         methods: {
             passwordblur(value) {
-                this.$store.state.oldPassword = value;
+                this.oldPassword = value;
+                localStorage.setItem('oldPassword',this.oldPassword);
             },
             newPasswordblur(value) {
-                this.$store.state.newPassword = value;
+                this.newPassword = value;
+                localStorage.setItem('newPassword',this.newPassword);
             },
             checkCodeblur(value) {
-                this.$store.state.checkCode = value;
+                this.checkCode = value;
+                localStorage.setItem('checkCode',this.checkCode);
             },
             sendCheckCode() {
-                if (this.$store.state.oldPassword === '') {
+                if (this.oldPassword === '') {
                     this.$dialog.alert({
                         message: '原密码为空！'
                     })
-                } else if (this.$store.state.newPassword === '') {
+                } else if (this.newPassword === '') {
                     this.$dialog.alert({
                         message: '新密码为空！'
                     })
-                } else if (this.$store.state.newPassword.length < 6) {
+                } else if (this.newPassword.length < 6) {
                     this.$dialog.alert({
                         message: '新密码长度不能少于6位！'
                     })
                 } else {
-                    this.$axios.post(this.host + '/users/code/', {
-                        "phone_number": this.$store.state.phoneNumber,
+                    this.$axios.post('http://geeking.tech:8000/users/code/', {
+                        "phone_number": localStorage.getItem('user_name'),
                         "purpose": 2
                     })
                         .then(data => {
@@ -129,31 +154,38 @@
             },
             modifyPassword() {
                 this.$axios({
-                    url: this.host + '/users/changepassword/' + this.$store.state.phoneNumber + '/',
+                    url: 'http://geeking.tech:8000/users/changepassword/' + localStorage.getItem('uid') + '/',
                     method: "put",
-                    hearts: {
-                        "Authorization": "Bearer " + localStorage.getItem('currentUser_token')
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem('user_token')
                     },
                     data: {
-                        "old_password": this.$store.state.oldPassword,
-                        "new_password": this.$store.state.newPassword,
-                        "code": this.$store.state.checkCode
+                        "old_password": this.oldPassword,
+                        "new_password": this.newPassword,
+                        "code": this.checkCode
                     }
                 })
                     .then(response => {
                         // eslint-disable-next-line no-console
-                        console.log(response);
+                        //console.log(response);
+                        this.noUse = response;
                         this.$dialog.alert({
                             message: '修改成功！'
                         });
+                        localStorage.removeItem('oldPassword');
+                        localStorage.removeItem('newPassword');
+                        localStorage.removeItem('checkCode');
                         this.$router.push({name: 'user'});
                     })
                     .catch(error => {
                         // eslint-disable-next-line no-console
-                        console.log(error);
-                        this.$dialog.alert({
-                            message: '原密码错误！'
-                        });
+                        //console.log(error);
+                        //this.noUse = error;
+                        if(error.response.status === 400) {
+                            this.$dialog.alert({
+                                message: '原密码错误！'
+                            });
+                        }
                     })
             }
         }

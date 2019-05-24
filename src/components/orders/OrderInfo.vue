@@ -5,7 +5,7 @@
                 <van-icon name="arrow-left" class="iconStyle" size="20px" @click="goBack"></van-icon>
                 <van-cell-group>
                     <van-field v-model="tableId" label="餐桌编号" placeholder="请输入餐桌编号" @input="getTableId"/>
-                    <van-cell title="上菜时间" center value="内容"/>
+                    <van-cell title="预计上菜时间" center :value="order_detail.length*4+'分钟'"/>
                     <van-cell title="支付方式" center is-link :value="payStyle == 0 ? '支付宝' : '微信'" @click="showPayStyle"/>
                     <van-popup v-model="show" position="bottom" @click-overlay="closePopUp" @open="choosePayStyle">
                         <van-cell-group>
@@ -23,24 +23,17 @@
                                 <van-icon slot="right-icon" name="checked" :color="weiXinColor" size="15px"/>
                                 <span slot="title" class="chooseFontStyle">微信支付</span>
                             </van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
-                            <van-cell :border="otherCellshow"></van-cell>
+                            <van-cell :border="otherCellshow" v-for="i in 8" :key="i"></van-cell>
                         </van-cell-group>
                     </van-popup>
                 </van-cell-group>
                 <div style="padding-top: 20px; padding-bottom: 10px; font-family: 'Microsoft YaHei'; ">
                     <van-cell title="菜品列表" center/>
                 </div>
-                <div v-for="(dishItem,index) in $store.state.dishList" :key="index">
-                    <div v-if="$store.state.orders[dishItem.dish_id]!=0">
+                <div v-for="(dishItem,index) in dishList" :key="index">
+                    <div v-if="getDishNum(dishItem.dish_id)!==0">
                         <van-card style="padding-top: 5px; padding-bottom: 5px; background-color: white; height: 50%"
-                                  :num="$store.state.orders[dishItem.dish_id]"
+                                  :num="getDishNum(dishItem.dish_id)"
                                   :price="dishItem.dish_price"
                                   :desc="dishItem.dish_description"
                         >
@@ -55,7 +48,7 @@
                 </div>
                 <van-cell>
                     <span slot="title">小计 <span
-                            style="font-size: large">￥{{$store.state.commdityPrice/100}}</span></span>
+                            style="font-size: large">￥{{commdityPrice/100}}</span></span>
                 </van-cell>
                 <div style="padding-top: 20px">
                     <van-cell-group>
@@ -82,15 +75,12 @@
                     </van-cell-group>
                 </div>
                 <van-cell-group>
-                    <van-cell :border="otherCellshow"></van-cell>
-                    <van-cell :border="otherCellshow"></van-cell>
-                    <van-cell :border="otherCellshow"></van-cell>
-                    <van-cell :border="otherCellshow"></van-cell>
+                    <van-cell :border="otherCellshow" v-for="i in 4" :key="i"></van-cell>
                 </van-cell-group>
             </van-col>
         </van-row>
         <van-submit-bar
-                :price="$store.state.commdityPrice"
+                :price="Number(commdityPrice)"
                 button-text="确认支付"
                 button-type="primary"
                 @submit="confirmPay"
@@ -108,25 +98,65 @@
                 otherCellshow: false,
                 aliColor: "grey",
                 weiXinColor: "grey",
-                payStyle: 0,
+                payStyle: Number,
                 dishNum: false,
                 columns: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '更多'],
-                dishNumValue: '',
-                tableId: '',
-                message: '',
-                order_detail: []
+                dishNumValue: Number,
+                tableId: String,
+                message: String,
+                order_detail: [],
+                noUse: null,
+                dishList: Array,
+                commdityPrice: Number,
+                temp:[]
             }
         },
         created() {
-            for (let i = 0; i <= this.$store.state.dishCount; i++) {
-                if (this.$store.state.orders[i] !== 0) {
-                    let dish_id = i;
-                    let dish_num = this.$store.state.orders[i];
-                    this.order_detail.push({"dish_id": dish_id, "dish_num": dish_num});
+            this.dishList = JSON.parse(localStorage.getItem('dishList'));
+            this.temp = JSON.parse(localStorage.getItem('chooseDish'));
+            this.commdityPrice = localStorage.getItem('commidity_price');
+            if(localStorage.getItem('tableId') === null){
+                this.tableId = '';
+                localStorage.setItem('tableId','');
+            } else{
+                this.tableId = localStorage.getItem('tableId');
+            }
+            if(localStorage.getItem('message') === null){
+                this.message = '';
+                localStorage.setItem('message','');
+            } else{
+                this.message = localStorage.getItem('message');
+            }
+            if(localStorage.getItem('dishNumValue') === null){
+                this.dishNumValue = 0;
+                localStorage.setItem('dishNumValue','0');
+            } else{
+                this.dishNumValue = Number(localStorage.getItem('dishNumValue'));
+            }
+            if(localStorage.getItem('payStyle') === null){
+                this.payStyle = 0;
+                localStorage.setItem('payStyle','0');
+            } else{
+                this.payStyle = Number(localStorage.getItem('payStyle'));
+            }
+            for(let i in this.temp){
+                if(this.temp[i].dish_num!==0){
+                    this.order_detail.push(this.temp[i]);
                 }
             }
         },
+        destroyed(){
+            this.clearInfo(0);
+        },
         methods: {
+            getDishNum(index) {
+                for (let item in this.order_detail) {
+                    if (this.order_detail[item].dish_id === index) {
+                        return this.order_detail[item].dish_num;
+                    }
+                }
+                return 0;
+            },
             showPayStyle() {
                 this.show = true;
             },
@@ -141,14 +171,17 @@
             },
             updateDishNum(value) {
                 this.dishNumValue = value;
+                localStorage.setItem('dishNumValue',value);
                 this.dishNum = false;
             },
             aliActive() {
                 this.payStyle = 0;
+                localStorage.setItem('payStyle','0');
                 this.show = false;
             },
             weiXinActive() {
                 this.payStyle = 1;
+                localStorage.setItem('payStyle','1');
                 this.show = false;
             },
             choosePayStyle() {
@@ -161,28 +194,23 @@
                 }
             },
             goBack() {
+                this.clearInfo(0);
                 this.$router.push({name: 'dish'});
             },
             getFav(value) {
                 this.message = value;
-                // eslint-disable-next-line no-console
-                //console.log(this.message);
+                localStorage.setItem('message',value);
             },
             confirmPay() {
-                if (Number(this.tableId) <= 0 || Number(this.tableId) > this.$store.state.tableCount) {
-                    this.$dialog.alert({
-                        message: '餐桌编号不存在！'
-                    })
-                } else {
                 this.$axios({
                     method: 'post',
-                    url: this.$store.state.host + '/orders/create',
+                    url: 'http://geeking.tech:8000/orders/create',
                     headers: {
-                        Authorization: "Bearer " + localStorage.getItem('currentUser_token')
+                        Authorization: "Bearer " + localStorage.getItem('user_token')
                     },
                     data: {
                         order_table: Number(this.tableId),
-                        order_price: this.$store.state.commdityPrice / 100,
+                        order_price: Number(this.commdityPrice / 100),
                         order_script: this.message,
                         order_status: 1,
                         order_detail: this.order_detail,
@@ -191,52 +219,52 @@
                     }
                 })
                     .then(response => {
-                        // eslint-disable-next-line no-console
-                        console.log(response);
-                        this.$axios({
-                            url: response.data.pay_url,
-                            method: 'get'
-                        })
-                            .then(data => {
-                                // eslint-disable-next-line no-console
-                                console.log(data);
-                                this.$dialog.alert({
-                                    message: '下单成功！'
-                                });
-                                this.$router.push({name: 'order'});
-                            })
-                            .catch(error => {
-                                // eslint-disable-next-line no-console
-                                console.log(error);
-                                this.$dialog.alert({
-                                    message: '出现错误！'
-                                });
-                            })
+                        this.clearInfo(1);
+                        localStorage.setItem('payUrl',response.data.pay_url);
+                        this.$router.push({name: 'confirmPay'});
                     })
                     .catch(error => {
-                        // eslint-disable-next-line no-console
-                        console.log(error);
-                        this.$dialog.alert({
-                            message: '出现错误！'
-                        })
+                        if (error.response.status === 401) {
+                            this.$dialog.alert({
+                                message: '登录已过期，请重新登录！'
+                            });
+                            localStorage.setItem('user_name','');
+                            this.$router.push({name: 'login'});
+                        }
                     })
-                }
             },
             getTableId(value) {
                 this.tableId = value;
+                localStorage.setItem('tableId',value);
+            },
+            clearInfo(index) {
+                if(index === 0){
+                    localStorage.removeItem('payStyle');
+                    localStorage.removeItem('message');
+                    localStorage.removeItem('dishNumValue');
+                } else {
+                    localStorage.removeItem('user_dish_num');
+                    localStorage.removeItem('commidity_num');
+                    localStorage.removeItem('commidity_price');
+                    localStorage.removeItem('dishList');
+                    localStorage.removeItem('chooseDish');
+                    localStorage.removeItem('payStyle');
+                    localStorage.removeItem('message');
+                    localStorage.removeItem('dishNumValue');
+                }
             }
-        }
+        },
     }
 </script>
 
 <style scoped>
     .payFontStyle {
         font-size: medium;
-        font-family: "Microsoft YaHei",serif;
+        font-family: "Microsoft YaHei", serif;
     }
 
     .chooseFontStyle {
-        font-family: "Microsoft YaHei",serif;
+        font-family: "Microsoft YaHei", serif;
         padding-left: 10px;
     }
 
@@ -248,7 +276,7 @@
     .dishTitle {
         font-size: 20px;
         font-style: normal;
-        font-family: "Microsoft YaHei",serif;
+        font-family: "Microsoft YaHei", serif;
         font-weight: bold;
     }
 

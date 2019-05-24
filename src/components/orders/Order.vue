@@ -86,15 +86,15 @@
             return {
                 isHaveOrder: 0,
                 orderList: Array,
-                host: this.$store.state.host
+                noUse: null
             }
         },
         created() {
             this.$axios({
                 method: 'get',
-                url: this.host + '/orders/',
+                url: 'http://geeking.tech:8000/orders/?page_size=100',
                 headers: {
-                    "Authorization": "Bearer " + localStorage.getItem('currentUser_token')
+                    "Authorization": "Bearer " + localStorage.getItem('user_token')
                 }
             })
                 .then(response => {
@@ -105,10 +105,15 @@
                 })
                 .catch(error => {
                     // eslint-disable-next-line no-console
-                    console.log(error);
-                    this.$dialog.alert({
-                        message: '登录已失效，请重新登录'
-                    });
+                    //console.log(error);
+                    if(error.response.status === 401) {
+                        this.noUse = error;
+                        this.$dialog.alert({
+                            message: '登录已失效，请重新登录'
+                        });
+                        localStorage.setItem('user_name','');
+                        this.$router.push({name:'login'})
+                    }
                 })
         },
         methods: {

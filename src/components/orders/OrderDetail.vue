@@ -40,9 +40,19 @@
                         <van-cell title="发票信息" value="未选择"></van-cell>
                     </van-cell-group>
                 </div>
+                <div v-if="orderDetail.transaction.order_status === 1" style="padding-top: 20px;">
+                    <van-button type="default" size="large" round style="background-color: #fed76f"
+                                @click="pay">支付
+                    </van-button>
+                </div>
+                <div v-if="orderDetail.transaction.order_status === 1" style="padding-top: 20px;">
+                    <van-button type="default" size="large" round style="background-color: lightgray"
+                                @click="deleteOrder">取消订单
+                    </van-button>
+                </div>
                 <div v-if="orderDetail.transaction.order_status === 4" style="padding-top: 20px;">
                     <van-button type="default" size="large" round style="background-color: #fed76f"
-                                @click="changeOrderState">confirm order
+                                @click="changeOrderState">确认订单
                     </van-button>
                 </div>
             </van-col>
@@ -56,12 +66,20 @@
         data() {
             return {
                 orderId: Number,
-                orderDetail: null,
-                host: this.$store.state.host
+                orderDetail: Array,
+                noUse: null
             }
         },
         created() {
-            this.orderDetail = this.$route.params.data;
+            if(localStorage.getItem('orderDetail') === null) {
+                this.orderDetail = this.$route.params.data;
+                localStorage.setItem('orderDetail',JSON.stringify(this.orderDetail));
+            }else{
+                this.orderDetail = JSON.parse(localStorage.getItem('orderDetail'));
+            }
+        },
+        destroyed(){
+            localStorage.removeItem('orderDetail');
         },
         methods: {
             goBack() {
@@ -84,10 +102,10 @@
             },
             changeOrderState() {
                 this.$axios({
-                    method: 'post',
-                    url: this.host + '/orders/' + this.orderDetail.order_id + '/process/',
-                    hearts: {
-                        "Authorization": "Bearer "+localStorage.getItem('currentUser_token')
+                    method: 'put',
+                    url: 'http://geeking.tech:8000/orders/' + this.orderDetail.order_id + '/process/',
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem('user_token')
                     },
                     data: {
                         order: this.orderDetail.order_id,
@@ -96,16 +114,63 @@
                 })
                     .then(response => {
                         // eslint-disable-next-line no-console
-                        console.log(response);
-                        this.orderDetail.transaction.order_status = 5;
+                        //console.log(response);
+                        this.noUse = response;
+                        this.$dialog.alert({
+                            message:'订单确认成功！'
+                        });
+                        this.$router.push({name:'order'});
                     })
                     .catch(error => {
                         // eslint-disable-next-line no-console
-                        console.log(error);
+                        //console.log(error);
+                        this.noUse = error;
                         this.$dialog.alert({
-                            message: 'Error appear'
+                            message: '出现错误'
                         })
                     })
+            },
+            deleteOrder(){
+                this.$axios({
+                    method: 'put',
+                    url: 'http://geeking.tech:8000/orders/' + this.orderDetail.order_id + '/process/',
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem('user_token')
+                    },
+                    data: {
+                        order: this.orderDetail.order_id,
+                        order_status: 0
+                    }
+                })
+                    .then(response => {
+                        // eslint-disable-next-line no-console
+                        //console.log(response);
+                        this.noUse = response;
+                        this.$dialog.alert({
+                            message:'订单取消成功！'
+                        });
+                        this.$router.push({name:'order'});
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        //console.log(error);
+                        if(error.response.status === 400) {
+                            this.$dialog.alert({
+                                message: '此订单正在处理中，用户无法取消，如果想要取消，请联系商家！'
+                            });
+                            this.$router.push({name:'order'});
+                        } else if(error.response.status === 401) {
+                            this.$dialog.alert({
+                                message: '登录已失效，请重新登录'
+                            });
+                            localStorage.setItem('user_name','');
+                            this.$router.push({name:'login'});
+                        }
+                    })
+            },
+            pay(){
+                localStorage.setItem('payUrl','http://120.24.91.195:8000/orders/pay?id='+this.orderDetail.order_id);
+                this.$router.push({name:'confirmPay'});
             }
         }
     }

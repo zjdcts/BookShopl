@@ -42,24 +42,26 @@
                             </van-cell-group>
                         </div>
                         <div>
-                            <van-col span="10">
-                                <van-radio-group v-model="radio">
-                                    <van-cell-group>
-                                        <van-cell title="上午" clickable border @click="changeRadio('1')">
-                                            <van-radio name="1"/>
-                                        </van-cell>
-                                        <van-cell title="中午" clickable border @click="changeRadio('2')">
-                                            <van-radio name="2"/>
-                                        </van-cell>
-                                        <van-cell title="下午" clickable border @click="changeRadio('3')">
-                                            <van-radio name="3"/>
-                                        </van-cell>
-                                        <van-cell title="晚上" clickable border @click="changeRadio('4')">
-                                            <van-radio name="4"/>
-                                        </van-cell>
-                                    </van-cell-group>
-                                </van-radio-group>
-                            </van-col>
+                            <van-radio-group :value="radio">
+                                <van-cell-group>
+                                    <van-cell clickable  @click="changeRadio('1')">
+                                        <van-radio name="1" @click="changeRadio('1')"/>
+                                        <span slot="title">上午</span>
+                                    </van-cell>
+                                    <van-cell clickable  @click="changeRadio('2')">
+                                        <van-radio name="2" @click="changeRadio('2')"/>
+                                        <span slot="title">中午</span>
+                                    </van-cell>
+                                    <van-cell clickable  @click="changeRadio('3')">
+                                        <van-radio name="3" @click="changeRadio('3')"/>
+                                        <span slot="title">下午</span>
+                                    </van-cell>
+                                    <van-cell clickable  @click="changeRadio('4')">
+                                        <van-radio name="4" @click="changeRadio('4')"/>
+                                        <span slot="title">晚上</span>
+                                    </van-cell>
+                                </van-cell-group>
+                            </van-radio-group>
                         </div>
                     </van-col>
                 </van-row>
@@ -80,26 +82,45 @@
         name: "SubmmitBook",
         data() {
             return {
-                tableId: '',
+                tableId: String,
                 show: false,
-                currentDate: '',
-                minDate: '',
-                maxDate: '',
-                bookDate: '',
+                currentDate: Date,
+                minDate: Date,
+                maxDate: Date,
+                bookDate: String,
                 nowChoose: '',
-                radio: '1',
+                radio: String,
                 isChange: false,
-                host: this.$store.state.host
+                noUse: null
             }
         },
         created() {
             this.currentDate = new Date();
             this.minDate = this.currentDate;
             this.maxDate = new Date(2021, 1, 1);
-            this.tableId = this.$route.params.id;
+            if (localStorage.getItem('orderTableId') === null) {
+                this.tableId = this.$route.params.id;
+                localStorage.setItem('orderTableId', this.tableId);
+            } else
+                this.tableId = localStorage.getItem('orderTableId');
+            if (localStorage.getItem('bookDate') === null) {
+                this.bookDate = '';
+                localStorage.setItem('bookDate', '');
+            } else
+                this.bookDate = localStorage.getItem('bookDate');
+            if (localStorage.getItem('radio') === null) {
+                this.radio = '1';
+                localStorage.setItem('radio', '1');
+            } else
+                this.radio = localStorage.getItem('radio');
+        },
+        destroyed(){
+            this.clearInfo();
         },
         methods: {
             onClickLeft() {
+                // eslint-disable-next-line no-console
+                //console.log('gg');
                 this.$router.push({name: 'choosetable'});
             },
             bookTable() {
@@ -114,9 +135,9 @@
                 } else {
                     this.$axios({
                         method: 'post',
-                        url: this.host + '/tables/books',
+                        url: 'http://geeking.tech:8000/tables/books',
                         headers: {
-                            "Authorization": "Bearer "+localStorage.getItem('currentUser_token')
+                            "Authorization": "Bearer " + localStorage.getItem('user_token')
                         },
                         data: {
                             "table": this.tableId,
@@ -126,26 +147,38 @@
                     })
                         .then(data => {
                             // eslint-disable-next-line no-console
-                            console.log(data);
+                            //console.log(data);
+                            this.noUse = data;
+                            this.clearInfo();
                             this.$router.push({name: 'table'});
                         })
                         .catch(error => {
                             // eslint-disable-next-line no-console
-                            console.log(error);
-                            this.$dialog.alert({
-                                message:'出现错误，请重试！'
-                            })
+                            //console.log(error);
+                            this.noUse = error;
+                            if(error.response.status === 401) {
+                                this.$dialog.alert({
+                                    message: '登录已失效，请重新登录！'
+                                });
+                                this.$router.push({name:'login'});
+                                localStorage.setItem('user_name','');
+                            } else if(error.response.status === 400) {
+                                this.$dialog.alert({
+                                    message: '该餐桌此时间段已被预订，请另选时间！'
+                                });
+                            }
                         })
                 }
             },
             chooseTime() {
                 this.show = true;
-                this.nowChoose = ''
+                this.nowChoose = '';
             },
             closePopUp() {
                 this.show = false;
             },
             getNowChoose(picker) {
+                this.nowChoose = '';
                 this.isChange = true;
                 let value = picker.getValues();
                 this.nowChoose += value[0];
@@ -164,10 +197,21 @@
                         day = '0' + day;
                     this.bookDate = this.currentDate.getFullYear() + '-' + month + '-' + day;
                 }
+                localStorage.setItem('bookDate', this.bookDate);
                 this.show = false;
+                // eslint-disable-next-line no-console
+                //console.log(this.bookDate);
             },
             changeRadio(index) {
+                // eslint-disable-next-line no-console
+                //console.log(index);
                 this.radio = index;
+                localStorage.setItem('radio', index);
+            },
+            clearInfo(){
+                localStorage.removeItem('radio');
+                localStorage.removeItem('bookDate');
+                localStorage.removeItem('orderTableId');
             }
         }
     }

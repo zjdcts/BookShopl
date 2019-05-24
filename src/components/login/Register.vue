@@ -66,7 +66,8 @@
                 dialogMessage: String,
                 isCheckCode: Boolean,
                 checkcodeTime: Number,
-                host: this.$store.state.host
+                host: this.$store.state.host,
+                noUse: null
             }
         },
         created() {
@@ -89,7 +90,7 @@
                 this.isLegal = false;
                 this.$store.state.phoneNumber = value;
                 // eslint-disable-next-line no-console
-                console.log(this.$store.state.phoneNumber);
+                //console.log(this.$store.state.phoneNumber);
                 if (this.$store.state.phoneNumber.length === 11) {
                     this.isLegal = true;
                     for (let i = 0; i < this.$store.state.phoneNumber.length; i++) {
@@ -100,7 +101,7 @@
                     }
                 }
                 // eslint-disable-next-line no-console
-                console.log(this.isLegal);
+                //console.log(this.isLegal);
             },
             checkCodeblur(value) {
                 this.$store.state.checkCode = value;
@@ -157,11 +158,12 @@
                         })
                         .catch(function (error) {
                             // eslint-disable-next-line no-console
-                            console.log(error);
-                            this.$dialog.alert({
+                            //console.log(error);
+                            this.noUse = error;
+                            /*this.$dialog.alert({
                                 message: '此手机号已注册,请直接登录！'
                             });
-                            this.$store.phoneNumber = '未登录'
+                            this.$store.phoneNumber = '未登录'*/
                         })
                 }
             },
@@ -181,7 +183,8 @@
                     })
                         .then(data => {
                             // eslint-disable-next-line no-console
-                            console.log(data);
+                            //console.log(data);
+                            this.noUse = data;
                             const TIME_COUNT = 60;
                             if (!this.timer) {
                                 this.checkcodeTime = TIME_COUNT;
@@ -200,6 +203,7 @@
                         .catch(error => {
                             // eslint-disable-next-line no-console
                             console.log(error);
+                            this.noUse = error;
                             this.$dialog.alert({
                                 message: '此手机号已注册,请直接登录！'
                             })
