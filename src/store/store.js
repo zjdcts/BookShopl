@@ -13,7 +13,7 @@ export const store = new Vuex.Store({
         tableList: Array,
         dishCount: Number,
         userPhoneNumber: String,
-        host: 'http://127.0.0.1:8000',
+        host: 'http://geeking.tech:8000',
         phoneNumber: String,
         password: String,
         oldPassword: String,
@@ -31,7 +31,6 @@ export const store = new Vuex.Store({
             }
         }
     },
-    getters: {},
     mutations: {
         setUser(state, {user_name, user_token, refresh_token}) {
             localStorage.setItem("currentUser_name", user_name);
@@ -39,4 +38,4 @@ export const store = new Vuex.Store({
             localStorage.setItem("refresh_token", refresh_token);
         }
     }
-})
+});

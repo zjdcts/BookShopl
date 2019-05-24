@@ -1,13 +1,15 @@
 <template>
-    <div>
+    <div class="note" :style="note">
+        <div>
         <van-nav-bar
                 right-text="帮助"
                 left-arrow
                 border
                 @click-left="onClickLeft"
                 @click-right="onClickRight"
+                style="opacity: 0.5"
         />
-        <div style="padding-top: 3rem">
+        <div style="padding-top: 3rem; opacity: 0.7">
             <van-row type="flex" justify="center">
                 <span style="font-family: 'Microsoft YaHei',serif;font-size: xx-large">欢迎登录！</span>
             </van-row>
@@ -15,7 +17,7 @@
         <div style="padding-top: 4rem; font-family: 'Microsoft YaHei',serif">
             <van-row type="flex" justify="center">
                 <van-col span="22">
-                    <van-cell-group>
+                    <van-cell-group style="opacity: 0.7">
                         <van-field
                                 v-model="$store.state.phoneNumber"
                                 label="手机号"
@@ -49,7 +51,7 @@
                                 @input="passwordblur"
                         ></van-field>
                     </van-cell-group>
-                    <van-row type="flex" justify="space-around">
+                    <van-row type="flex" justify="space-around" style="opacity: 0.7;">
                         <van-col span="15">
                             <a v-if="!isPasswordLogin"
                                class="fontStyle"
@@ -62,12 +64,13 @@
                             <a class="fontStyle" @click="goToRegister">新用户请点这:)</a>
                         </van-col>
                     </van-row>
-                    <div style="padding-top: 2rem">
+                    <div style="padding-top: 2rem; opacity: 0.7">
                         <van-button style="background-color: green; color: white" round size="large" @click="login">登录
                         </van-button>
                     </div>
                 </van-col>
             </van-row>
+        </div>
         </div>
     </div>
 </template>
@@ -82,7 +85,13 @@
                 checkcodeTime: Number,
                 timer: null,
                 isPasswordLogin: Boolean,
-                host: this.$store.state.host
+                host: this.$store.state.host,
+                note: {
+                    backgroundImage: "url(" + require("../dishes/picture/background.jpg") + ")",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "25px auto",
+                    height: '100vh'
+                }
             }
         },
         created() {
@@ -241,7 +250,7 @@
     }
 
     .fontStyle {
-        color: lightgrey;
+        color: #fed76f;
         padding-top: 5px;
         text-decoration: underline;
         font-family: 'Microsoft YaHei',serif;

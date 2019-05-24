@@ -130,6 +130,7 @@
             modifyPassword() {
                 this.$axios({
                     url: this.host + '/users/changepassword/' + this.$store.state.phoneNumber + '/',
+                    method: "put",
                     hearts: {
                         "Authorization": "Bearer " + localStorage.getItem('currentUser_token')
                     },

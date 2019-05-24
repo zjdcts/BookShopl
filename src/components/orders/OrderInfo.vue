@@ -193,7 +193,25 @@
                     .then(response => {
                         // eslint-disable-next-line no-console
                         console.log(response);
-                        this.$router.push({name: 'order'});
+                        this.$axios({
+                            url: response.data.pay_url,
+                            method: 'get'
+                        })
+                            .then(data => {
+                                // eslint-disable-next-line no-console
+                                console.log(data);
+                                this.$dialog.alert({
+                                    message: '下单成功！'
+                                });
+                                this.$router.push({name: 'order'});
+                            })
+                            .catch(error => {
+                                // eslint-disable-next-line no-console
+                                console.log(error);
+                                this.$dialog.alert({
+                                    message: '出现错误！'
+                                });
+                            })
                     })
                     .catch(error => {
                         // eslint-disable-next-line no-console

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="isHaveOrder == 0" style="padding-top: 40px">
+        <div v-if="isHaveOrder === 0" style="padding-top: 40px">
             <van-row type="flex" justify="center">
                 <span style="font-family: 'Microsoft YaHei',serif; color: lightgrey">您还没有相关订单哟</span>
             </van-row>
@@ -84,7 +84,7 @@
         },
         data() {
             return {
-                isHaveOrder: 1,
+                isHaveOrder: 0,
                 orderList: Array,
                 host: this.$store.state.host
             }
@@ -101,6 +101,7 @@
                     // eslint-disable-next-line no-console
                     console.log(response);
                     this.orderList = response.data.results;
+                    this.isHaveOrder = response.data.count;
                 })
                 .catch(error => {
                     // eslint-disable-next-line no-console
