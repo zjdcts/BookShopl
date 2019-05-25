@@ -2,7 +2,7 @@
     <div>
         <van-row>
             <van-col span="5" style="font-family: 'Microsoft YaHei',serif; font-size: 30px">
-                <van-badge-group :active-key="activeKey" @change="onChange" id="badge-group" :style="style">
+                <van-badge-group :active-key="activeKey" @change="onChange" id="badge-group">
                     <van-badge v-for="index in dishType" :title="index" :key="index">
                     </van-badge>
                 </van-badge-group>

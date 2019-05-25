@@ -230,6 +230,10 @@
                             });
                             localStorage.setItem('user_name','');
                             this.$router.push({name: 'login'});
+                        } else if(error.response.status === 400){
+                            this.$dialog.alert({
+                                message: '请输入订单备注！1！'
+                            });
                         }
                     })
             },

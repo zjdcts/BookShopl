@@ -95,9 +95,7 @@
                 if (this.userName === '未登录')
                     this.$router.push({name: 'login'});
                 else {
-                    this.$dialog.alert({
-                        message: '您已登录！'
-                    })
+                    this.$router.push({name:'user',params: {id: 3}});
                 }
             },
             goToChooseTable() {

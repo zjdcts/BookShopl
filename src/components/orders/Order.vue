@@ -107,12 +107,12 @@
                     // eslint-disable-next-line no-console
                     //console.log(error);
                     if(error.response.status === 401) {
-                        this.noUse = error;
+                        //this.noUse = error;
                         this.$dialog.alert({
                             message: '登录已失效，请重新登录'
                         });
                         localStorage.setItem('user_name','');
-                        this.$router.push({name:'login'})
+                        this.$router.push({name:'login'});
                     }
                 })
         },
