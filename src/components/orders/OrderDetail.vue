@@ -67,7 +67,9 @@
             return {
                 orderId: Number,
                 orderDetail: Array,
-                noUse: null
+                noUse: null,
+                userDishNum:[],
+                dishList:[]
             }
         },
         created() {

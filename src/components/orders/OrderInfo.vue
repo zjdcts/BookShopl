@@ -31,7 +31,7 @@
                     <van-cell title="菜品列表" center/>
                 </div>
                 <div v-for="(dishItem,index) in dishList" :key="index">
-                    <div v-if="getDishNum(dishItem.dish_id)!==0">
+                    <div v-if="getDishNum(dishItem.dish_id)>0">
                         <van-card style="padding-top: 5px; padding-bottom: 5px; background-color: white; height: 50%"
                                   :num="getDishNum(dishItem.dish_id)"
                                   :price="dishItem.dish_price"
@@ -113,7 +113,7 @@
         },
         created() {
             this.dishList = JSON.parse(localStorage.getItem('dishList'));
-            this.temp = JSON.parse(localStorage.getItem('chooseDish'));
+            this.temp = JSON.parse(localStorage.getItem('user_dish_num'));
             this.commdityPrice = localStorage.getItem('commidity_price');
             if(localStorage.getItem('tableId') === null){
                 this.tableId = '';
@@ -139,9 +139,12 @@
             } else{
                 this.payStyle = Number(localStorage.getItem('payStyle'));
             }
-            for(let i in this.temp){
-                if(this.temp[i].dish_num!==0){
-                    this.order_detail.push(this.temp[i]);
+            for(let i in this.dishList){
+                // eslint-disable-next-line no-console
+                if(this.temp[this.dishList[i].dish_id] > 0){
+                    // eslint-disable-next-line no-console
+                    //console.log(i.dish_id,this.temp[i.dish_id]);
+                    this.order_detail.push({dish_id:this.dishList[i].dish_id,dish_num:this.temp[this.dishList[i].dish_id]});
                 }
             }
         },
@@ -150,12 +153,7 @@
         },
         methods: {
             getDishNum(index) {
-                for (let item in this.order_detail) {
-                    if (this.order_detail[item].dish_id === index) {
-                        return this.order_detail[item].dish_num;
-                    }
-                }
-                return 0;
+                return this.temp[index];
             },
             showPayStyle() {
                 this.show = true;
@@ -232,7 +230,7 @@
                             this.$router.push({name: 'login'});
                         } else if(error.response.status === 400){
                             this.$dialog.alert({
-                                message: '请输入订单备注！1！'
+                                message: '请输入订单备注！'
                             });
                         }
                     })

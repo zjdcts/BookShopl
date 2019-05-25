@@ -104,30 +104,34 @@
                     // eslint-disable-next-line no-console
                     console.log(response);
                     this.dishList = response.data.results;
-                    localStorage.setItem('dishList',JSON.stringify(this.dishList));
-                    let flag = false;
-                    for (let i in this.dishList) {
-                        if (Number(this.dishList[i].dish_price) === 0) {
-                            flag = true;
-                            break;
-                        }
-                    }
+                    localStorage.setItem('dishList', JSON.stringify(this.dishList));
+                    // let flag = false;
+                    // for (let i in this.dishList) {
+                    //     if (Number(this.dishList[i].dish_price) === 0) {
+                    //         flag = true;
+                    //         break;
+                    //     }
+                    // }
                     // eslint-disable-next-line no-console
-                    console.log(flag);
+                    //console.log(flag);
                     if (localStorage.getItem('user_dish_num') === null) {
                         for (let item in this.dishList) {
                             let dishId = this.dishList[item].dish_id;
-                            let dishNum = 0;
-                            this.userDishNum.push({dishId, dishNum});
+                            //let dishNum = 0;
+                            //this.userDishNum.push({dishId, dishNum});
+                            this.userDishNum[dishId] = 0;
                         }
                         localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
                     } else {
                         this.userDishNum = JSON.parse(localStorage.getItem('user_dish_num'));
-                        for(let i in this.userDishNum){
-                            if(this.userDishNum[i].dishNum !== 0){
-                                this.chooseDish.push({dish_id:this.userDishNum[i].dishId,dish_num:this.userDishNum[i].dishNum});
+                        /*for (let i in this.userDishNum) {
+                            if (this.userDishNum[i].dishNum !== 0) {
+                                this.chooseDish.push({
+                                    dish_id: this.userDishNum[i].dishId,
+                                    dish_num: this.userDishNum[i].dishNum
+                                });
                             }
-                        }
+                        }*/
                     }
                     if (localStorage.getItem('commidity_num') === null) {
                         localStorage.setItem('commidity_num', '0');
@@ -152,69 +156,67 @@
         },
         methods: {
             getDishNum(index) {
-                for (let item in this.userDishNum) {
-                    if (this.userDishNum[item].dishId === index) {
-                        return this.userDishNum[item].dishNum;
-                    }
-                }
+                return this.userDishNum[index];
             },
             addNum: function (index, price) {
                 this.commdityNum += 1;
                 localStorage.setItem('commidity_num', String(this.commdityNum));
                 this.commdityPrice += price * 100;
                 localStorage.setItem('commidity_price', String(this.commdityPrice));
-                for (let item in this.userDishNum) {
-                    if (this.userDishNum[item].dishId === index) {
-                        this.userDishNum[item].dishNum++;
-                        break;
-                    }
-                }
-                if (this.chooseDish.length === 0) {
-                    this.chooseDish.push({dish_id: index, dish_num: 1});
-                } else {
-                    let flag = false;
-                    for (let i in this.chooseDish) {
-                        if (this.chooseDish[i].dish_id === index) {
-                            flag = true;
-                            this.chooseDish[i].dish_num++;
-                            break;
-                        }
-                    }
-                    if (!flag) {
-                        this.chooseDish.push({dish_id: index, dish_num: 1});
-                    }
-                }
+                this.userDishNum[index]++;
+                // for (let item in this.userDishNum) {
+                //     if (this.userDishNum[item].dishId === index) {
+                //         this.userDishNum[item].dishNum++;
+                //         break;
+                //     }
+                // }
+                // if (this.chooseDish.length === 0) {
+                //     this.chooseDish.push({dish_id: index, dish_num: 1});
+                // } else {
+                //     let flag = false;
+                //     for (let i in this.chooseDish) {
+                //         if (this.chooseDish[i].dish_id === index) {
+                //             flag = true;
+                //             this.chooseDish[i].dish_num++;
+                //             break;
+                //         }
+                //     }
+                //     if (!flag) {
+                //         this.chooseDish.push({dish_id: index, dish_num: 1});
+                //     }
+                // }
                 localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
-                localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
+                //localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
             },
             subNum: function (index, price) {
                 this.commdityNum -= 1;
                 localStorage.setItem('commidity_num', String(this.commdityNum));
                 this.commdityPrice -= price * 100;
                 localStorage.setItem('commidity_price', String(this.commdityPrice));
-                for (let item in this.userDishNum) {
-                    if (this.userDishNum[item].dishId === index) {
-                        this.userDishNum[item].dishNum--;
-                        break;
-                    }
-                }
-                if (this.chooseDish.length === 0) {
-                    this.chooseDish.push({dish_id: index, dish_num: 1});
-                } else {
-                    let flag = false;
-                    for (let i in this.chooseDish) {
-                        if (this.chooseDish[i].dish_id === index) {
-                            flag = true;
-                            this.chooseDish[i].dish_num--;
-                            break;
-                        }
-                    }
-                    if (!flag) {
-                        this.chooseDish.push({dish_id: index, dish_num: 1});
-                    }
-                }
+                this.userDishNum[index]--;
+                // for (let item in this.userDishNum) {
+                //     if (this.userDishNum[item].dishId === index) {
+                //         this.userDishNum[item].dishNum--;
+                //         break;
+                //     }
+                // }
+                // if (this.chooseDish.length === 0) {
+                //     this.chooseDish.push({dish_id: index, dish_num: 1});
+                // } else {
+                //     let flag = false;
+                //     for (let i in this.chooseDish) {
+                //         if (this.chooseDish[i].dish_id === index) {
+                //             flag = true;
+                //             this.chooseDish[i].dish_num--;
+                //             break;
+                //         }
+                //     }
+                //     if (!flag) {
+                //         this.chooseDish.push({dish_id: index, dish_num: 1});
+                //     }
+                // }
                 localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
-                localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
+                //localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
                 if (this.commdityNum === 0)
                     this.show = false;
             },
