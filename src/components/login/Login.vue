@@ -236,6 +236,8 @@
                                 this.$router.push({name: 'announcement'});
                             })
                             .catch(response => {
+                                // eslint-disable-next-line no-console
+                                //console.log(response);
                                 if (response.response.status === 401) {
                                     this.$dialog.alert({
                                         message: '密码错误！'

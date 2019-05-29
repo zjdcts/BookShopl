@@ -202,11 +202,17 @@
                         })
                         .catch(error => {
                             // eslint-disable-next-line no-console
-                            console.log(error);
-                            this.noUse = error;
-                            this.$dialog.alert({
-                                message: '此手机号已注册,请直接登录！'
-                            })
+                            //console.log(error.response.data.non_field_errors[0]);
+                            if(error.response.data.non_field_errors[0] === '手机号格式错误') {
+                                this.$dialog.alert({
+                                    message: '手机号格式错误！'
+                                })
+                            }
+                            else if(error.response.data.non_field_errors[0] === '该手机号已经被注册') {
+                                this.$dialog.alert({
+                                    message: '此手机号已注册,请直接登录！'
+                                })
+                            }
                         })
                 }
             }

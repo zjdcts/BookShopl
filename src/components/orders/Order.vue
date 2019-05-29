@@ -30,7 +30,11 @@
                                         <span style="font-weight: bold">叮咚叮咚(DinDonDinDon)</span>
                                     </van-row>
                                     <van-row style="padding-top: 5px">
-                                        <span style="color: grey; font-size: 0.8rem">{{Date(item.transaction.order_time).substring(0, 24)}}</span>
+                                        <span v-if="item.transaction.order_status === 0 || item.transaction.order_status === 1" style="color: grey; font-size: 0.8rem">{{item.transaction.order_time.substring(0, 10)+' '+item.transaction.order_time.substring(11, 19)}}</span>
+                                        <span v-if="item.transaction.order_status === 2" style="color: grey; font-size: 0.8rem">{{item.transaction.order_pay_time.substring(0, 10)+' '+item.transaction.order_pay_time.substring(11, 19)}}</span>
+                                        <span v-if="item.transaction.order_status === 3" style="color: grey; font-size: 0.8rem">{{item.transaction.order_process_time.substring(0, 10)+' '+item.transaction.order_process_time.substring(11, 19)}}</span>
+                                        <span v-if="item.transaction.order_status === 4" style="color: grey; font-size: 0.8rem">{{item.transaction.order_finish_time.substring(0, 10)+' '+item.transaction.order_finish_time.substring(11, 19)}}</span>
+                                        <span v-if="item.transaction.order_status === 5" style="color: grey; font-size: 0.8rem">{{item.transaction.order_confirm_time.substring(0, 10)+' '+item.transaction.order_confirm_time.substring(11, 19)}}</span>
                                     </van-row>
                                 </van-col>
                                 <van-col span="5">
@@ -100,19 +104,20 @@
                 .then(response => {
                     // eslint-disable-next-line no-console
                     console.log(response);
-                    this.orderList = response.data.results;
+                    this.orderList = response.data.results.reverse();
+                    //this.orderList.prototype.reverse();
                     this.isHaveOrder = response.data.count;
                 })
                 .catch(error => {
                     // eslint-disable-next-line no-console
                     //console.log(error);
-                    if(error.response.status === 401) {
+                    if (error.response.status === 401) {
                         //this.noUse = error;
                         this.$dialog.alert({
                             message: '登录已失效，请重新登录'
                         });
-                        localStorage.setItem('user_name','');
-                        this.$router.push({name:'login'});
+                        localStorage.setItem('user_name', '');
+                        this.$router.push({name: 'login'});
                     }
                 })
         },
