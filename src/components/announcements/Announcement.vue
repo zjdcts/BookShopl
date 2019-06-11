@@ -2,32 +2,32 @@
     <div style="background-color: #f7f7f9">
         <DishSwipe></DishSwipe>
         <van-row type="flex" justify="center" style="padding-top: 2px; height: 9rem;">
-            <van-col span="24" style="background-color: #fec427">
+            <van-col span="24" style="background-color: #bce0b0">
                 <div @click="goToDish" style="height: 100%; width: 100%">
                     <van-row type="flex" justify="center">
-                        <span class="iconfont" style="padding-top: 2rem">&#xe63c;</span>
+                        <span class="iconfont" style="padding-top: 2rem">&#xe60c;</span>
                     </van-row>
                     <van-row type="flex" justify="center">
-                        <span>点餐</span>
+                        <span>随便看看</span>
                     </van-row>
                 </div>
             </van-col>
         </van-row>
         <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
-            <van-col span="10" style="background-color: #fed76f">
-                <div @click="goToChooseTable" style="height: 100%; width: 100%">
+            <van-col span="10" style="background-color: #ceedc3">
+                <div @click="goToSearch" style="height: 100%; width: 100%">
                     <van-row type="flex" justify="center">
-                        <span class="iconfont" style="padding-top: 2rem">&#xe615;</span>
+                        <span class="iconfont" style="padding-top: 2rem">&#xe611;</span>
                     </van-row>
                     <van-row type="flex" justify="center">
-                        <span>预定</span>
+                        <span>搜书</span>
                     </van-row>
                 </div>
             </van-col>
-            <van-col span="14" style="background-color: #fec427;" @click="goToOrder">
+            <van-col span="14" style="background-color: #bce0b0;" @click="goToOrder">
                 <div @click="goToOrder" style="height: 100%; width: 100%">
                     <van-row type="flex" justify="center" style="padding-top: 2rem">
-                        <span class="iconfont">&#xe67c;</span>
+                        <span class="iconfont">&#xe67d;</span>
                     </van-row>
                     <van-row type="flex" justify="center">
                         <span>订单详情</span>
@@ -36,20 +36,20 @@
             </van-col>
         </van-row>
         <van-row type="flex" justify="space-around" style="padding-top: 5px; height: 9rem">
-            <van-col span="14" style="background-color: #feebb3" @click="goToUser">
-                <div @click="goToUser" style="height: 100%; width: 100%">
+            <van-col span="14" style="background-color: #dcf0e4" @click="goToShopCart">
+                <div @click="goToShopCart" style="height: 100%; width: 100%">
                     <van-row type="flex" justify="center" style="padding-top: 2rem">
-                        <span class="iconfont">&#xe651;</span>
+                        <van-icon style="font-size: 3rem" name="shopping-cart-o" />
                     </van-row>
                     <van-row type="flex" justify="center">
-                        <span>个人中心</span>
+                        <span>购物车</span>
                     </van-row>
                 </div>
             </van-col>
-            <van-col span="10" style="background-color: #fed76f" @click="goToLogin">
+            <van-col span="10" style="background-color: #ceedc3" @click="goToLogin">
                 <div @click="goToLogin" style="height: 100%; width: 100%">
                     <van-row type="flex" justify="center" style="padding-top: 2rem">
-                        <span class="iconfont">&#xe642;</span>
+                        <span class="iconfont">&#xe67c;</span>
                     </van-row>
                     <van-row type="flex" justify="center">
                         <span>{{userName}}</span>
@@ -71,15 +71,17 @@
             DishSwipe,
             TabBar
         },
-        data(){
-          return{
-              userName:String
-          }
+        data() {
+            return {
+                userName: String
+            }
         },
-        created(){
-          this.userName = localStorage.getItem('user_name');
-          if(this.userName === '')
-              this.userName ='未登录'
+        created() {
+            if (localStorage.getItem('user_name') === null || localStorage.getItem('user_name') === '') {
+                this.userName = '未登录';
+                localStorage.setItem('user_name', '');
+            } else
+                this.userName = localStorage.getItem('user_name');
         },
         methods: {
             goToDish() {
@@ -95,11 +97,14 @@
                 if (this.userName === '未登录')
                     this.$router.push({name: 'login'});
                 else {
-                    this.$router.push({name:'user',params: {id: 3}});
+                    this.$router.push({name: 'user', params: {id: 4}});
                 }
             },
-            goToChooseTable() {
-                this.$router.push({name: 'table'});
+            goToSearch() {
+                this.$router.push({name: 'search'});
+            },
+            goToShopCart() {
+                this.$router.push({name: 'shopcart'});
             }
         }
     }
@@ -121,10 +126,11 @@
     }
 
     .iconfont {
-        font-family: "iconfont";
+        font-family: "iconfont", serif;
         font-size: 3rem;
         font-style: normal;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
+
 </style>

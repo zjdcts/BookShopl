@@ -1,39 +1,58 @@
 <template>
     <div>
         <van-row>
-            <van-col span="5" style="font-family: 'Microsoft YaHei',serif; font-size: 30px">
+            <van-col span="7" style="font-family: 'Microsoft YaHei',serif; font-size: 30px; padding-bottom: 60px">
                 <van-badge-group :active-key="activeKey" @change="onChange" id="badge-group">
                     <van-badge v-for="index in dishType" :title="index" :key="index">
                     </van-badge>
                 </van-badge-group>
             </van-col>
-            <van-col span="19">
-                <div v-for="(dishItem,index) in dishList" :key="index">
-                    <div v-if="nowDishType === dishItem.dish_type">
-                        <van-card style="background-color: white"
-                                  :num="getDishNum(dishItem.dish_id)"
-                                  :price="dishItem.dish_price"
-                                  :desc="dishItem.dish_description"
-                        >
-                            <div slot="title" class="dishTitle">
-                                {{dishItem.dish_name}}
-                            </div>
-                            <div slot="thumb" style="width: 90px; height: 90px;">
-                                <img class="imgStyle" :src="dishItem.dish_picture" alt="dish_picture">
-                            </div>
-                            <div slot="footer">
-                                <van-stepper disable-input
-                                             integer
-                                             min="0"
-                                             :value="getDishNum(dishItem.dish_id)"
-                                             @plus="addNum(dishItem.dish_id, dishItem.dish_price)"
-                                             @minus="subNum(dishItem.dish_id, dishItem.dish_price)"
-                                >
-                                </van-stepper>
-                            </div>
-                        </van-card>
+            <van-col span="17">
+                <van-row>
+                    <div v-for="(dishItem,index) in dishList" :key="index">
+                        <div v-if="nowDishType === dishItem.category">
+                            <van-card style="background-color: white"
+                                      :num="getDishNum(dishItem.id)"
+                                      :price="dishItem.price"
+                                      :desc="dishItem.description"
+                            >
+                                <div slot="title" class="dishTitle">
+                                    {{dishItem.name}}
+                                </div>
+                                <div slot="thumb" style="width: 90px; height: 90px;">
+                                    <img class="imgStyle" :src="dishItem.picture" alt="dish_picture">
+                                </div>
+                                <div slot="footer">
+                                    <van-row type="flex" justify="space-between">
+                                        <van-col>
+                                            <span style="font-family: 'Microsoft YaHei', serif;font-size: 15px;line-height: 30px;color: #0086b3;" @click="goToDetail(dishItem)">查看详情</span>
+                                        </van-col>
+                                        <van-col>
+                                            <van-stepper disable-input
+                                                         integer
+                                                         min="0"
+                                                         max="1"
+                                                         :value="getDishNum(dishItem.id)"
+                                                         @plus="addNum(dishItem)"
+                                                         @minus="subNum(dishItem)"
+                                            >
+                                            </van-stepper>
+                                        </van-col>
+                                    </van-row>
+                                </div>
+                            </van-card>
+                        </div>
                     </div>
-                </div>
+                </van-row>
+                <van-row type="flex" justify="center" style="padding-top: 10px" v-show="totalItems > 0">
+                        <van-pagination
+                                v-model="currentPage"
+                                :total-items="totalItems"
+                                :show-page-size="3"
+                                force-ellipses
+                                @change="changePage"
+                        />
+                </van-row>
             </van-col>
         </van-row>
         <van-submit-bar
@@ -46,17 +65,17 @@
         </van-submit-bar>
         <van-popup v-model="show" class="popUp">
             <van-cell :title="'已选'+commdityNum+'件商品'"></van-cell>
-            <div v-for="(dishItem,index) in dishList" :key="index">
-                <div v-show="getDishNum(dishItem.dish_id) !== 0">
+            <div v-for="(dishItem,index) in userDishNum" :key="index">
+                <div v-if="dishItem > 0">
                     <van-cell-group>
-                        <van-cell :title="dishItem.dish_name">
+                        <van-cell :title="chooseDish[index].name">
                             <div slot="right-icon">
                                 <van-stepper disable-input
                                              integer
                                              min="0"
-                                             :value="getDishNum(dishItem.dish_id)"
-                                             @plus="addNum(dishItem.dish_id, dishItem.dish_price)"
-                                             @minus="subNum(dishItem.dish_id, dishItem.dish_price)"
+                                             :value="dishItem"
+                                             @plus="addNum(index)"
+                                             @minus="subNum(index)"
                                 >
                                 </van-stepper>
                             </div>
@@ -72,157 +91,130 @@
         name: "dishNavBar",
         data() {
             return {
-                dishType: Array,
+                dishType: [],
                 activeKey: Number,
                 nowDishType: String,
                 show: Boolean,
                 temp: Number,
                 isFixed: String,
-                style: {
-                    paddingTop: '0px',
-                    //position: 'relative',
-                },
                 dishList: Array,
                 userDishNum: [],
                 dishCount: Number,
                 commdityNum: Number,
                 commdityPrice: Number,
-                chooseDish: []
+                chooseDish: [],
+                currentPage: Number,
+                totalItems: Number,
+                show_page_size: Number,
+                test: Number,
             }
         },
         created() {
             this.activeKey = 0;
             this.show = false;
             this.temp = '';
-            this.$axios.get('http://geeking.tech:8000/dishes/types/')
+            this.currentPage = 1;
+            this.totalItems = 0;
+            this.$axios.get('/books/category/')
                 .then(response => {
-                    this.dishType = response.data;
+                    for(let i in response.data){
+                        if(response.data[i].indexOf('&')>=1)
+                            continue;
+                        this.dishType.push(response.data[i]);
+                    }
                     this.nowDishType = this.dishType[0];
-                });
-            this.$axios.get('http://geeking.tech:8000/dishes/lists/?page_size=500')
-                .then(response => {
-                    // eslint-disable-next-line no-console
-                    console.log(response);
-                    this.dishList = response.data.results;
-                    localStorage.setItem('dishList', JSON.stringify(this.dishList));
-                    // let flag = false;
-                    // for (let i in this.dishList) {
-                    //     if (Number(this.dishList[i].dish_price) === 0) {
-                    //         flag = true;
-                    //         break;
-                    //     }
-                    // }
-                    // eslint-disable-next-line no-console
-                    //console.log(flag);
-                    if (localStorage.getItem('user_dish_num') === null) {
-                        for (let item in this.dishList) {
-                            let dishId = this.dishList[item].dish_id;
-                            //let dishNum = 0;
-                            //this.userDishNum.push({dishId, dishNum});
-                            this.userDishNum[dishId] = 0;
-                        }
-                        localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
-                    } else {
-                        this.userDishNum = JSON.parse(localStorage.getItem('user_dish_num'));
-                        /*for (let i in this.userDishNum) {
-                            if (this.userDishNum[i].dishNum !== 0) {
-                                this.chooseDish.push({
-                                    dish_id: this.userDishNum[i].dishId,
-                                    dish_num: this.userDishNum[i].dishNum
-                                });
+                    this.$axios.get('/books/list/?category=' + this.dishType[0])
+                        .then(response => {
+                            this.dishList = response.data.results;
+                            this.totalItems = response.data.count;
+                            if (localStorage.getItem('user_dish_num') === null) {
+                                for (let i in this.dishList) {
+                                    if (this.userDishNum[this.dishList[i].id] !== null && this.userDishNum[this.dishList[i].id] !== undefined)
+                                        continue;
+                                    this.userDishNum[this.dishList[i].id] = 0;
+                                    this.chooseDish[this.dishList[i].id] = '';
+                                }
+                                localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                                localStorage.setItem('choose_dish', JSON.stringify(this.chooseDish));
+                            } else {
+                                this.userDishNum = JSON.parse(localStorage.getItem('user_dish_num'));
+                                this.chooseDish = JSON.parse(localStorage.getItem('choose_dish'));
+                                for (let i in this.dishList) {
+                                    if (this.userDishNum[this.dishList[i].id] !== null && this.userDishNum[this.dishList[i].id] !== undefined)
+                                        continue;
+                                    this.userDishNum[this.dishList[i].id] = 0;
+                                    this.chooseDish[this.dishList[i].id] = '';
+                                }
+                                localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                                localStorage.setItem('choose_dish', JSON.stringify(this.chooseDish));
                             }
-                        }*/
-                    }
-                    if (localStorage.getItem('commidity_num') === null) {
-                        localStorage.setItem('commidity_num', '0');
-                        this.commdityNum = 0;
-                    } else {
-                        this.commdityNum = Number(localStorage.getItem('commidity_num'));
-                    }
-                    if (localStorage.getItem('commidity_price') === null) {
-                        localStorage.setItem('commidity_price', '0');
-                        this.commdityPrice = 0;
-                    } else {
-                        this.commdityPrice = Number(localStorage.getItem('commidity_price'));
-                    }
+                        })
+                        .catch(error => {
+                            // eslint-disable-next-line no-console
+                            console.log(error);
+                        });
                 });
-        },
-        mounted() {
-            window.addEventListener('scroll', this.handleScroll);
-            this.temp = document.querySelector('#badge-group').offsetTop;
-        },
-        destroyed() {
-            window.removeEventListener('scroll', this.handleScroll)
+            if (localStorage.getItem('commidity_num') === null) {
+                this.commdityNum = 0;
+                localStorage.setItem('commidity_num', '0');
+            } else {
+                this.commdityNum = Number(localStorage.getItem('commidity_num'));
+            }
+            if (localStorage.getItem('commidity_price') === null) {
+                this.commdityPrice = 0;
+                localStorage.setItem('commidity_price', '0');
+            } else {
+                this.commdityPrice = Number(localStorage.getItem('commidity_price'));
+            }
         },
         methods: {
             getDishNum(index) {
                 return this.userDishNum[index];
             },
-            addNum: function (index, price) {
+            addNum: function (index) {
                 this.commdityNum += 1;
                 localStorage.setItem('commidity_num', String(this.commdityNum));
-                this.commdityPrice += price * 100;
+                this.commdityPrice += index.price * 100;
                 localStorage.setItem('commidity_price', String(this.commdityPrice));
-                this.userDishNum[index]++;
-                // for (let item in this.userDishNum) {
-                //     if (this.userDishNum[item].dishId === index) {
-                //         this.userDishNum[item].dishNum++;
-                //         break;
-                //     }
-                // }
-                // if (this.chooseDish.length === 0) {
-                //     this.chooseDish.push({dish_id: index, dish_num: 1});
-                // } else {
-                //     let flag = false;
-                //     for (let i in this.chooseDish) {
-                //         if (this.chooseDish[i].dish_id === index) {
-                //             flag = true;
-                //             this.chooseDish[i].dish_num++;
-                //             break;
-                //         }
-                //     }
-                //     if (!flag) {
-                //         this.chooseDish.push({dish_id: index, dish_num: 1});
-                //     }
-                // }
+                this.$set(this.userDishNum, index.id, this.userDishNum[index.id]+1);
                 localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
-                //localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
+                if(this.chooseDish[index.id] === '')
+                    this.chooseDish[index.id] = index;
+                localStorage.setItem('choose_dish', JSON.stringify(this.chooseDish));
             },
-            subNum: function (index, price) {
+            subNum: function (index) {
                 this.commdityNum -= 1;
                 localStorage.setItem('commidity_num', String(this.commdityNum));
-                this.commdityPrice -= price * 100;
+                this.commdityPrice -= index.price * 100;
                 localStorage.setItem('commidity_price', String(this.commdityPrice));
-                this.userDishNum[index]--;
-                // for (let item in this.userDishNum) {
-                //     if (this.userDishNum[item].dishId === index) {
-                //         this.userDishNum[item].dishNum--;
-                //         break;
-                //     }
-                // }
-                // if (this.chooseDish.length === 0) {
-                //     this.chooseDish.push({dish_id: index, dish_num: 1});
-                // } else {
-                //     let flag = false;
-                //     for (let i in this.chooseDish) {
-                //         if (this.chooseDish[i].dish_id === index) {
-                //             flag = true;
-                //             this.chooseDish[i].dish_num--;
-                //             break;
-                //         }
-                //     }
-                //     if (!flag) {
-                //         this.chooseDish.push({dish_id: index, dish_num: 1});
-                //     }
-                // }
+                this.$set(this.userDishNum, index.id, this.userDishNum[index.id]-1);
                 localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
-                //localStorage.setItem('chooseDish', JSON.stringify(this.chooseDish));
+                if(this.chooseDish[index.id] !== '')
+                    this.chooseDish[index.id] = '';
+                localStorage.setItem('choose_dish', JSON.stringify(this.chooseDish));
                 if (this.commdityNum === 0)
                     this.show = false;
             },
             onChange(key) {
                 this.activeKey = key;
                 this.nowDishType = this.dishType[key];
+                this.currentPage = 1;
+                this.$axios.get('/books/list/?category=' + this.nowDishType)
+                    .then(response => {
+                        this.dishList = response.data.results;
+                        for (let i in this.dishList) {
+                            if (this.userDishNum[this.dishList[i].id] !== null && this.userDishNum[this.dishList[i].id] !== undefined)
+                                continue;
+                            this.userDishNum[this.dishList[i].id] = 0;
+                            this.chooseDish[this.dishList[i].id] = '';
+                        }
+                        localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                        localStorage.setItem('choose_dish', JSON.stringify(this.chooseDish));
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        console.log(error);
+                    });
             },
             goToOrderInfo() {
                 if (this.commdityNum !== 0)
@@ -242,13 +234,26 @@
                     })
                 }
             },
-            handleScroll() {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-                if (scrollTop > this.temp) {
-                    this.style.paddingTop = scrollTop - 237.1 + 'px';
-                } else {
-                    this.style.paddingTop = 0;
-                }
+            changePage() {
+                this.$axios.get('/books/list/?page=' + this.currentPage + '&category=' + this.nowDishType)
+                    .then(response => {
+                        this.dishList = response.data.results;
+                        for (let i in this.dishList) {
+                            if (this.userDishNum[this.dishList[i].id] !== null && this.userDishNum[this.dishList[i].id] !== undefined)
+                                continue;
+                            this.userDishNum[this.dishList[i].id] = 0;
+                            this.chooseDish[this.dishList[i].id] = '';
+                        }
+                        localStorage.setItem('user_dish_num', JSON.stringify(this.userDishNum));
+                        localStorage.setItem('choose_dish', JSON.stringify(this.chooseDish));
+                    })
+                    .catch(error => {
+                        // eslint-disable-next-line no-console
+                        console.log(error);
+                    });
+            },
+            goToDetail(value){
+                this.$router.push({name:'bookdetail',params:{data:value}});
             }
         }
     }
@@ -260,9 +265,9 @@
     }
 
     .dishTitle {
-        font-size: 20px;
+        font-size: 15px;
         font-style: normal;
-        font-family: "Microsoft YaHei", serif;
+        font-family: Consolas, serif;
         font-weight: bold;
     }
 

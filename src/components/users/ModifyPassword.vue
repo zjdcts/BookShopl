@@ -70,7 +70,7 @@
                 noUse: null,
                 oldPassword:String,
                 newPassword:String,
-                checkCode:String
+                checkCode:String,
             }
         },
         created() {
@@ -125,13 +125,14 @@
                         message: '新密码长度不能少于6位！'
                     })
                 } else {
-                    this.$axios.post('http://geeking.tech:8000/users/code/', {
+                    this.$axios.post('/users/code/', {
                         "phone_number": localStorage.getItem('user_name'),
                         "purpose": 2
                     })
                         .then(data => {
                             // eslint-disable-next-line no-console
-                            console.log(data);
+                            //console.log(data);
+                            this.noUse = data;
                             const TIME_COUNT = 60;
                             if (!this.timer) {
                                 this.checkcodeTime = TIME_COUNT;
@@ -154,7 +155,7 @@
             },
             modifyPassword() {
                 this.$axios({
-                    url: 'http://geeking.tech:8000/users/changepassword/' + localStorage.getItem('uid') + '/',
+                    url: '/users/changepassword/' + localStorage.getItem('uid') + '/',
                     method: "put",
                     headers: {
                         "Authorization": "Bearer " + localStorage.getItem('user_token')

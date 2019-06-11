@@ -19,7 +19,7 @@
                     <van-col span="22">
                         <div style="padding-top: 2rem; opacity: 0.7">
                             <div style="padding-top: 2rem; opacity: 0.7">
-                                <van-button style="background-color:lightgray; color: white" round size="large" @click="concelPay">取消
+                                <van-button style="background-color:lightgray; color: white" round size="large" @click="cancelPay">取消
                                 </van-button>
                             </div>
                         </div>
@@ -56,8 +56,7 @@
                 })
                     .then(data => {
                         // eslint-disable-next-line no-console
-                        //console.log(data);
-                        this.noUse = data;
+                        console.log(data);
                         this.$dialog.alert({
                             message: '支付成功！'
                         });
@@ -65,14 +64,13 @@
                     })
                     .catch(error => {
                         // eslint-disable-next-line no-console
-                        //console.log(error);
-                        this.noUse = error;
+                        console.log(error);
                         this.$dialog.alert({
                             message: '出现错误！'
                         });
                     })
             },
-            concelPay(){
+            cancelPay(){
                 this.$dialog.confirm({
                     message:'确定取消支付？'
                 })

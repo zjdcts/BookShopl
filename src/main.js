@@ -16,19 +16,19 @@ import User from "./components/users/User";
 import OrderInfo from "./components/orders/OrderInfo";
 import Login from "./components/login/Login";
 import Register from "./components/login/Register";
-import ChooseTable from "./components/tables/ChooseTable";
-import SubmmitBook from "./components/tables/SubmmitBook";
-import Table from "./components/tables/table"
-import ChangeBook from "./components/tables/ChangeBook";
 import OrderDetail from "./components/orders/OrderDetail";
 import ModifyPassword from "./components/users/ModifyPassword";
 import Pay from "./components/orders/Pay";
+import ShopCart from "./components/shopCart/ShopCart";
+import Search from "./components/tables/Search";
+import BookDetail from "./components/dishes/BookDetail";
 
 Vue.config.productionTip = false;
 
 Vue.use(Vant);
 Vue.use(VueRouter);
 Vue.prototype.$axios = axios;
+axios.defaults.baseURL='http://geeking.tech:8259';
 
 const routes = [
     {path: '/', name: 'announcement', component: Announcement},
@@ -38,62 +38,21 @@ const routes = [
     {path: '/profile', name: 'user', component: User},
     {path: '/login', name: 'login', component: Login},
     {path: '/register', name: 'register', component: Register},
-    {path: '/choosetable', name: 'choosetable', component: ChooseTable},
-    {path: '/booktable', name: 'booktable', component: SubmmitBook},
-    {path: '/table', name: 'table', component: Table},
-    {path: '/changebook', name: 'changebook', component: ChangeBook},
+    {path: '/search', name: 'search', component: Search},
     {path: '/orderdetail', name: 'orderdetail', component: OrderDetail},
     {path: '/modifypassword', name: 'modifypassword', component: ModifyPassword},
     {path: '/confirmPay', name: 'confirmPay', component: Pay},
+    {path: '/bookdetail', name: 'bookdetail', component: BookDetail},
+    {path: '/shopcart', name: 'shopcart', component: ShopCart},
     {path: '*', redirect: '/'},
 ];
+
+
 
 const router = new VueRouter({
     routes,
     mode: "history"// (缩写) 相当于 routes: routes
 });
-
-// router.beforeEach((to, from, next) => {
-//     // ...
-//     var token = localStorage.getItem("currentUser_token");
-//     // eslint-disable-next-line no-console
-//     //console.log(token,to.name);
-//     if (to.name === 'login' || to.name === 'register' || to.name === 'announcement' || to.name === 'dish') {
-//         next();
-//     } else {
-//         if (token === '') {
-//             next('/login');
-//         }
-//         else {
-//             next();
-//         }
-//     }
-//     next();
-// });
-
-// http request 拦截器
-// axios.interceptors.request.use(
-//     config => {
-//         return config;
-//     },
-//     error => {
-//         localStorage.setItem("currentUser_token",'');
-//         // this.$store.state.userPhoneNumber = '未登录';
-//         this.$router.push({name:'login'});
-//         return Promise.reject(error);
-//     });
-
-// http response 拦截器
-// axios.interceptors.response.use(
-//     response => {
-//         return response;
-//     },
-//     error => {
-//         localStorage.setItem("currentUser_token",'');
-//         // this.$store.state.userPhoneNumber = '未登录';
-//         this.$router.push({name:'login'});
-//         return Promise.reject(error.response.data)   // 返回接口返回的错误信息
-//     });
 
 new Vue({
     store: store,

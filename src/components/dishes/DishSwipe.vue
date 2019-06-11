@@ -20,7 +20,7 @@
         },
         created() {
             this.$axios({
-                url: 'http://geeking.tech:8000/announcements/',
+                url: '/announcements/',
                 method: 'get'
             })
                 .then(response => {
@@ -31,7 +31,7 @@
                     //console.log(error.response.status);
                     // eslint-disable-next-line no-console
                     //console.log("aaa");
-                    this.noUse = error;
+                    //this.noUse = error;
                     if(error.response.status === 503) {
                         this.$dialog.alert({
                             message: '当前服务不可得到！'

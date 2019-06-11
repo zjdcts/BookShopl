@@ -2,15 +2,13 @@
     <div class="xx">
         <van-row span="24">
             <van-nav-bar
-                    title="菜品列表"
-                    left-text="返回"
-                    right-text="回首页"
+                    title="书籍列表"
                     fixed
                     left-arrow
                     @click-left="onClickLeft"
                     @click-right="onClickRight"
             >
-                <span class="iconfont" slot="right">&#xe70c;</span>
+                <van-icon name="home-o" slot="right" size="20px"/>
             </van-nav-bar>
             <DishSwipe style="padding-top: 46px"></DishSwipe>
             <DishNavBar></DishNavBar>
@@ -30,10 +28,10 @@
         },
         methods: {
             onClickLeft: function () {
-                this.$router.push({name:'announcement'});
+                this.$router.push({name:'announcement',params:{id:0}});
             },
             onClickRight: function () {
-                this.$router.push('/');
+                this.$router.push({name:'announcement',params:{id:0}});
             }
         }
     };

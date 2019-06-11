@@ -27,14 +27,12 @@
                                 </van-col>
                                 <van-col span="15" style="padding-left: 10px">
                                     <van-row>
-                                        <span style="font-weight: bold">叮咚叮咚(DinDonDinDon)</span>
+                                        <span style="font-weight: bold">订单: {{item.order_id}}</span>
                                     </van-row>
                                     <van-row style="padding-top: 5px">
                                         <span v-if="item.transaction.order_status === 0 || item.transaction.order_status === 1" style="color: grey; font-size: 0.8rem">{{item.transaction.order_time.substring(0, 10)+' '+item.transaction.order_time.substring(11, 19)}}</span>
                                         <span v-if="item.transaction.order_status === 2" style="color: grey; font-size: 0.8rem">{{item.transaction.order_pay_time.substring(0, 10)+' '+item.transaction.order_pay_time.substring(11, 19)}}</span>
-                                        <span v-if="item.transaction.order_status === 3" style="color: grey; font-size: 0.8rem">{{item.transaction.order_process_time.substring(0, 10)+' '+item.transaction.order_process_time.substring(11, 19)}}</span>
-                                        <span v-if="item.transaction.order_status === 4" style="color: grey; font-size: 0.8rem">{{item.transaction.order_finish_time.substring(0, 10)+' '+item.transaction.order_finish_time.substring(11, 19)}}</span>
-                                        <span v-if="item.transaction.order_status === 5" style="color: grey; font-size: 0.8rem">{{item.transaction.order_confirm_time.substring(0, 10)+' '+item.transaction.order_confirm_time.substring(11, 19)}}</span>
+                                        <span v-if="item.transaction.order_status === 3" style="color: grey; font-size: 0.8rem">{{item.transaction.order_confirm_time.substring(0, 10)+' '+item.transaction.order_confirm_time.substring(11, 19)}}</span>
                                     </van-row>
                                 </van-col>
                                 <van-col span="5">
@@ -46,10 +44,6 @@
                                         <span v-if="item.transaction.order_status === 2"
                                               style="font-size: 0.8rem">订单已支付</span>
                                         <span v-if="item.transaction.order_status === 3"
-                                              style="font-size: 0.8rem">订单处理中</span>
-                                        <span v-if="item.transaction.order_status === 4"
-                                              style="font-size: 0.8rem">订单已完成</span>
-                                        <span v-if="item.transaction.order_status === 5"
                                               style="font-size: 0.8rem">订单已确认</span>
                                     </van-row>
                                     <van-row></van-row>
@@ -96,7 +90,7 @@
         created() {
             this.$axios({
                 method: 'get',
-                url: 'http://geeking.tech:8000/orders/?page_size=100',
+                url: '/orders/?page_size=100',
                 headers: {
                     "Authorization": "Bearer " + localStorage.getItem('user_token')
                 }
@@ -105,14 +99,10 @@
                     // eslint-disable-next-line no-console
                     console.log(response);
                     this.orderList = response.data.results.reverse();
-                    //this.orderList.prototype.reverse();
                     this.isHaveOrder = response.data.count;
                 })
                 .catch(error => {
-                    // eslint-disable-next-line no-console
-                    //console.log(error);
                     if (error.response.status === 401) {
-                        //this.noUse = error;
                         this.$dialog.alert({
                             message: '登录已失效，请重新登录'
                         });

@@ -4,8 +4,6 @@
             <van-col span="23">
                 <van-icon name="arrow-left" class="iconStyle" size="20px" @click="goBack"></van-icon>
                 <van-cell-group>
-                    <van-field v-model="tableId" label="餐桌编号" placeholder="请输入餐桌编号" @input="getTableId"/>
-                    <van-cell title="预计上菜时间" center :value="order_detail.length*4+'分钟'"/>
                     <van-cell title="支付方式" center is-link :value="payStyle == 0 ? '支付宝' : '微信'" @click="showPayStyle"/>
                     <van-popup v-model="show" position="bottom" @click-overlay="closePopUp" @open="choosePayStyle">
                         <van-cell-group>
@@ -28,20 +26,20 @@
                     </van-popup>
                 </van-cell-group>
                 <div style="padding-top: 20px; padding-bottom: 10px; font-family: 'Microsoft YaHei'; ">
-                    <van-cell title="菜品列表" center/>
+                    <van-cell title="书籍列表" center/>
                 </div>
-                <div v-for="(dishItem,index) in dishList" :key="index">
-                    <div v-if="getDishNum(dishItem.dish_id)>0">
+                <div v-for="(dishItem,index) in temp" :key="index">
+                    <div v-if="dishItem > 0">
                         <van-card style="padding-top: 5px; padding-bottom: 5px; background-color: white; height: 50%"
-                                  :num="getDishNum(dishItem.dish_id)"
-                                  :price="dishItem.dish_price"
-                                  :desc="dishItem.dish_description"
+                                  :num="Number(dishItem)"
+                                  :price="Number(dishList[index].price)"
+                                  :desc="dishList[index].description"
                         >
                             <div slot="title" class="dishTitle">
-                                {{dishItem.dish_name}}
+                                {{dishList[index].name}}
                             </div>
                             <div slot="thumb" style="width: 70%; height: 70%;">
-                                <img class="imgStyle" :src="dishItem.dish_picture">
+                                <img class="imgStyle" :src="dishList[index].picture">
                             </div>
                         </van-card>
                     </div>
@@ -52,25 +50,6 @@
                 </van-cell>
                 <div style="padding-top: 20px">
                     <van-cell-group>
-                        <van-field
-                                v-model="message"
-                                label="订单备注"
-                                type="textarea"
-                                placeholder="请输入口味、偏好"
-                                rows="1"
-                                autosize
-                                @input="getFav"
-                        />
-                        <van-cell title="餐具份数" is-link :value="dishNumValue" @click="showDishNum"></van-cell>
-                        <van-popup v-model="dishNum" position="bottom" @click-overlay="closeDishNum">
-                            <van-picker
-                                    show-toolbar
-                                    title="餐具份数"
-                                    :columns="columns"
-                                    @cancel="closeDishNum"
-                                    @confirm="updateDishNum"
-                            />
-                        </van-popup>
                         <van-cell title="发票信息" is-link value="未选择"></van-cell>
                     </van-cell-group>
                 </div>
@@ -100,7 +79,6 @@
                 weiXinColor: "grey",
                 payStyle: Number,
                 dishNum: false,
-                columns: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '更多'],
                 dishNumValue: Number,
                 tableId: String,
                 message: String,
@@ -112,39 +90,18 @@
             }
         },
         created() {
-            this.dishList = JSON.parse(localStorage.getItem('dishList'));
+            this.dishList = JSON.parse(localStorage.getItem('choose_dish'));
             this.temp = JSON.parse(localStorage.getItem('user_dish_num'));
             this.commdityPrice = localStorage.getItem('commidity_price');
-            if(localStorage.getItem('tableId') === null){
-                this.tableId = '';
-                localStorage.setItem('tableId','');
-            } else{
-                this.tableId = localStorage.getItem('tableId');
-            }
-            if(localStorage.getItem('message') === null){
-                this.message = '';
-                localStorage.setItem('message','');
-            } else{
-                this.message = localStorage.getItem('message');
-            }
-            if(localStorage.getItem('dishNumValue') === null){
-                this.dishNumValue = 0;
-                localStorage.setItem('dishNumValue','0');
-            } else{
-                this.dishNumValue = Number(localStorage.getItem('dishNumValue'));
-            }
             if(localStorage.getItem('payStyle') === null){
                 this.payStyle = 0;
                 localStorage.setItem('payStyle','0');
             } else{
                 this.payStyle = Number(localStorage.getItem('payStyle'));
             }
-            for(let i in this.dishList){
-                // eslint-disable-next-line no-console
-                if(this.temp[this.dishList[i].dish_id] > 0){
-                    // eslint-disable-next-line no-console
-                    //console.log(i.dish_id,this.temp[i.dish_id]);
-                    this.order_detail.push({dish_id:this.dishList[i].dish_id,dish_num:this.temp[this.dishList[i].dish_id]});
+            for(let i in this.temp){
+                if(this.temp[i] > 0){
+                    this.order_detail.push({book_id:this.dishList[i].id});
                 }
             }
         },
@@ -160,17 +117,6 @@
             },
             closePopUp() {
                 this.show = false;
-            },
-            showDishNum() {
-                this.dishNum = true;
-            },
-            closeDishNum() {
-                this.dishNum = false
-            },
-            updateDishNum(value) {
-                this.dishNumValue = value;
-                localStorage.setItem('dishNumValue',value);
-                this.dishNum = false;
             },
             aliActive() {
                 this.payStyle = 0;
@@ -195,24 +141,17 @@
                 this.clearInfo(0);
                 this.$router.push({name: 'dish'});
             },
-            getFav(value) {
-                this.message = value;
-                localStorage.setItem('message',value);
-            },
             confirmPay() {
                 this.$axios({
                     method: 'post',
-                    url: 'http://geeking.tech:8000/orders/create',
+                    url: '/orders/create/',
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem('user_token')
                     },
                     data: {
-                        order_table: Number(this.tableId),
                         order_price: Number(this.commdityPrice / 100),
-                        order_script: this.message,
                         order_status: 1,
                         order_detail: this.order_detail,
-                        table_ware_num: Number(this.dishNumValue),
                         pay_method: this.payStyle
                     }
                 })
@@ -235,24 +174,15 @@
                         }
                     })
             },
-            getTableId(value) {
-                this.tableId = value;
-                localStorage.setItem('tableId',value);
-            },
             clearInfo(index) {
                 if(index === 0){
                     localStorage.removeItem('payStyle');
-                    localStorage.removeItem('message');
-                    localStorage.removeItem('dishNumValue');
                 } else {
                     localStorage.removeItem('user_dish_num');
                     localStorage.removeItem('commidity_num');
                     localStorage.removeItem('commidity_price');
-                    localStorage.removeItem('dishList');
-                    localStorage.removeItem('chooseDish');
+                    localStorage.removeItem('choose_dish');
                     localStorage.removeItem('payStyle');
-                    localStorage.removeItem('message');
-                    localStorage.removeItem('dishNumValue');
                 }
             }
         },

@@ -6,7 +6,7 @@
                     <span style="font-family: 'Microsoft YaHei';font-size: 2rem">{{userName}}</span>
                 </van-row>
                 <van-row>
-                    <span v-if="userName !== '未登录'" style="color: lightgrey;">再忙，也要记得吃饭哟~</span>
+                    <span v-if="userName !== '未登录'" style="color: lightgrey;">再忙，也要记得看书哟~</span>
                 </van-row>
             </van-col>
             <van-col span="4">
@@ -50,8 +50,6 @@
             this.userName = localStorage.getItem('user_name');
             if(this.userName === '')
                 this.userName = '未登录'
-            // eslint-disable-next-line no-console
-            //console.log(this.direction);
         },
         methods: {
             changeDir(index) {
