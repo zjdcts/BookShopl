@@ -22,7 +22,7 @@
                             <van-row type="flex">
                                 <van-col span="3">
                                     <div style="height: 100%;width: 100%">
-                                        <img src="../../assets/logo.png" style="height: 100%; width: 100%;" alt=""/>
+                                        <img :src="item.order_detail[0].book_picture" style="height: 100%; width: 100%;" alt=""/>
                                     </div>
                                 </van-col>
                                 <van-col span="15" style="padding-left: 10px">
