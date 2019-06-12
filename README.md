@@ -1,4 +1,4 @@
-# 叮咚叮咚点餐系统的前端 DindonFrontend
+# GeekBook系统的前端 GeekBookFrontend
 
 ## Project setup
 ```
